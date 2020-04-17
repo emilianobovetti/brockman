@@ -1,0 +1,1 @@
+export { parseRSS } from './parseRSS';
