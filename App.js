@@ -1,21 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 import feeds from './feeds.json';
-import { parseRSS } from './RSSParser';
-
-const fetchRss = feeds.map(feed =>
-  fetch(feed)
-    .then(resp => resp.text())
-    .then(parseRSS)
-);
-
-Promise.all(fetchRss).then(arr => arr.forEach(rss => console.log(rss.merge())));
-//Promise.all(fetchRss).then(arr => arr.forEach(rss => rss.merge()));
+import { RSSChannel } from 'components/RSSChannel';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>hello, world</Text>
+      <FlatList
+        data={feeds}
+        keyExtractor={item => item}
+        renderItem={({ item }) => <RSSChannel url={item} />}
+      />
     </View>
   );
 }
@@ -23,6 +18,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    flexWrap: 'wrap',
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
