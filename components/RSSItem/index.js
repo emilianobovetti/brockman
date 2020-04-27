@@ -1,1 +1,0 @@
-export { RSSItem } from './RSSItem';

@@ -1,7 +1,6 @@
 [
-    "https://javascriptweekly.com/rss",
-    "https://feeds.feedburner.com/ponyfooweekly?format=xml",
-    "https://frontendfoc.us/rss",
-    "https://react.statuscode.com/rss",
-    "https://web-design-weekly.com/newsletter.xml"
+    "https://medium.com/feed/dailyjs",
+    "https://www.echojs.com/rss",
+    "https://www.reddit.com/r/javascript.rss",
+    "https://reactjsnews.com/feed.xml"
 ]

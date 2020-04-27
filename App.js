@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import feeds from './feeds.json';
-import { RSSChannel } from 'components/RSSChannel';
+import { NewsFeed } from './components/NewsFeed';
 
 export default function App() {
   return (
@@ -9,7 +9,7 @@ export default function App() {
       <FlatList
         data={feeds}
         keyExtractor={item => item}
-        renderItem={({ item }) => <RSSChannel url={item} />}
+        renderItem={({ item }) => <NewsFeed url={item} />}
       />
     </View>
   );

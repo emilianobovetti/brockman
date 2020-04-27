@@ -1,0 +1,1 @@
+export { parseNewsFeed } from './parseNewsFeed';
