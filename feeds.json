@@ -1,6 +1,22 @@
 [
-    "https://medium.com/feed/dailyjs",
-    "https://www.echojs.com/rss",
-    "https://www.reddit.com/r/javascript.rss",
-    "https://reactjsnews.com/feed.xml"
+    {
+        "name": "Medium - Daily JS",
+        "url": "https://medium.com/feed/dailyjs"
+    },
+    {
+        "name": "EchoJS",
+        "url": "https://www.echojs.com/rss"
+    },
+    {
+        "name": "r/javascript",
+        "url": "https://www.reddit.com/r/javascript.rss"
+    },
+    {
+        "name": "ReactJS News",
+        "url": "https://reactjsnews.com/feed.xml"
+    },
+    {
+        "name": "reactjs.org",
+        "url": "https://reactjs.org/feed.xml"
+    }
 ]

@@ -39,21 +39,21 @@ export const childrenStream = node =>
   fromArrayLike(node.childNodes);
 
 export const textNodeToJson = node => {
-  const [text] = childrenStream(node).filter(child =>
-    child.data != null && child.data.trim() !== ''
-  );
+  const [text = ''] = childrenStream(node)
+    .filter(child => child.data != null)
+    .map(child => child.data.trim());
 
-  return text == null ? [] : [node.tagName, text.data];
+  return text === '' ? [] : [node.tagName, text];
 };
 
-const attributesStreamToJson = (attributes, json = {}) =>
+const attributesToJson = (attributes, json = {}) =>
   attributes.reduce((acc, attribute) => {
     acc[attribute.nodeName] = attribute.nodeValue;
 
     return acc;
   }, json);
 
-const childrenStreamToJson = (children, json = {}) =>
+const childrenToJson = (children, json = {}) =>
   children
     .filter(child => child.childNodes != null)
     .reduce((acc, child) => {
@@ -69,8 +69,8 @@ const childrenStreamToJson = (children, json = {}) =>
 const rssNodeToJson = node => {
   let json = {};
 
-  json = attributesStreamToJson(attributesStream(node), json);
-  json = childrenStreamToJson(childrenStream(node), json);
+  json = attributesToJson(attributesStream(node), json);
+  json = childrenToJson(childrenStream(node), json);
 
   return json;
 };
@@ -105,16 +105,16 @@ const atomNodeToJson = node => {
   const children = childrenStream(node)
     .forEach(child => {
       if (child.tagName === 'link') {
-        const atts = attributesStreamToJson(attributesStream(child));
+        const atts = attributesToJson(attributesStream(child));
 
-        if (atts.rel == null || atts.rel !== 'self') {
-          json.link = atts.href;
+        if (atts.rel !== 'self') {
+          json.link = atts.href.trim();
         }
       }
     });
 
-  json = attributesStreamToJson(attributesStream(node), json);
-  json = childrenStreamToJson(children, json);
+  json = attributesToJson(attributesStream(node), json);
+  json = childrenToJson(children, json);
 
   return json;
 };

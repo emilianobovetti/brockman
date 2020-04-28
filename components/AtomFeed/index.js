@@ -1,1 +1,0 @@
-export { AtomFeed } from './AtomFeed';
