@@ -18,5 +18,9 @@
     {
         "name": "reactjs.org",
         "url": "https://reactjs.org/feed.xml"
+    },
+    {
+        "name": "Dan Abramov's Blog",
+        "url": "https://overreacted.io/rss.xml"
     }
 ]

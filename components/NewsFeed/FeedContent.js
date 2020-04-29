@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { FeedEntry } from './FeedEntry';
 import { styles } from './styles';
 

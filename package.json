@@ -9,10 +9,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@fpc/hooks": "^1.1.1",
+    "@fpc/hooks": "^1.2.0",
     "@fpc/maybe": "^1.0.0",
     "@fpc/result": "^1.0.0",
     "@fpc/stream": "^1.1.0",
+    "@fpc/types": "^0.0.9",
     "expo": "~37.0.8",
     "react": "~16.13.1",
     "react-dom": "~16.13.1",

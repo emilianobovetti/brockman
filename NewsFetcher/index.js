@@ -1,0 +1,1 @@
+export { fetchNewsFeed } from './fetchNewsFeed';
