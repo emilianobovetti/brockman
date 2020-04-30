@@ -5,8 +5,13 @@ import { styles } from './styles';
 
 const toggle = val => !val;
 
+const getLink = ({ link }) => link;
+const feedEntryRenderer = ({ item }) =>
+  <FeedEntry title={item.title} link={item.link} />;
+
 export function FeedContent(props) {
   const [expanded, setExpanded] = useState(false);
+  const entries = props.entries || props.items;
 
   return (
     <>
@@ -26,10 +31,9 @@ export function FeedContent(props) {
           {/*<Separator />*/}
           <FlatList
             numColumns={1}
-            contentContainerStyle={{ flexDirection: 'row' }}
-            data={props.entries || props.items}
-            keyExtractor={item => item.link}
-            renderItem={({ item }) => <FeedEntry {...item} />}
+            data={entries}
+            keyExtractor={getLink}
+            renderItem={feedEntryRenderer}
           />
         </View>
       }

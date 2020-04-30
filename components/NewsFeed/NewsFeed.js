@@ -14,11 +14,11 @@ export function NewsFeed({ name, url, fetchResult }) {
     );
   }
 
-  const [feed, fetchErr] = fetchResult;
+  const [feed, err] = fetchResult;
 
-  if (fetchErr != null) {
+  if (err != null) {
     // TODO
-    console.error(fetchErr);
+    console.error(err);
     return (
       <View style={styles.feedRow}>
         <Text style={styles.feedTitle}>Oh no! I've got an error!</Text>

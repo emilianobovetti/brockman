@@ -1,52 +1,88 @@
 import React, { useReducer, useEffect } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import feeds from './feeds.json';
 import { NewsFeed } from './components/NewsFeed';
-import { fetchNewsFeed } from './NewsFetcher';
+import { fetchNewsFeed, networkFetchNewsFeed } from './NewsFetcher';
 import Constants from 'expo-constants';
 
-const initialState = {
+const initAppState = {
+  totalItems: feeds.length,
+  fetchCount: 0,
+  refreshCount: 0,
+  feedFetcher: fetchNewsFeed,
+  refreshing: false,
   urlToIndex: {},
   feedArray: [],
 };
 
-const init = state => {
-  feeds.forEach(feed => {
-    state.urlToIndex[feed.url] = state.feedArray.push(feed) - 1;
-  });
+feeds.forEach(feed => {
+  initAppState.urlToIndex[feed.url] = initAppState.feedArray.push(feed) - 1;
+});
 
-  return state;
-};
-
-const reducer = (state, [url, res]) => {
+const handleFetchResult = (state, [url, res]) => {
+  const fetchCount = state.fetchCount + 1;
   const index = state.urlToIndex[url];
   const feed = state.feedArray[index];
   feed.fetchResult = res;
 
-  const urlToIndex = state.urlToIndex;
-  const feedArray = state.feedArray.slice();
-
-  return { urlToIndex, feedArray };
+  return {
+    ...state,
+    fetchCount,
+    refreshing: state.refreshing && fetchCount < state.totalItems,
+    feedArray: state.feedArray.slice(),
+  };
 };
 
+const resetFetchResult = feed => {
+  const { fetchResult, ...rest } = feed;
+
+  return rest;
+};
+
+const handleRefresh = state => ({
+  ...initAppState,
+  feedArray: state.feedArray.map(resetFetchResult),
+  refreshCount: state.refreshCount + 1,
+  feedFetcher: networkFetchNewsFeed,
+  refreshing: true,
+});
+
+const appStateReducer = (state, msg) => {
+  switch (msg) {
+    case 'refresh':
+      return handleRefresh(state);
+    default:
+      return handleFetchResult(state, msg);
+  }
+};
+
+const getUrl = ({ url }) => url;
+const newsFeedRenderer = ({ item }) => <NewsFeed {...item} />;
+
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState, init);
+  const [state, dispatch] = useReducer(appStateReducer, initAppState);
 
   useEffect(() => {
     feeds.forEach(({ url }) =>
-      fetchNewsFeed(url).then(res => dispatch([url, res]))
+      state.feedFetcher(url).then(res => dispatch([url, res]))
     );
-  }, []);
+  }, [state.feedFetcher, state.refreshCount]);
 
   return (
     <View style={styles.container}>
       <View style={styles.statusBar} />
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={state.refreshing}
+            onRefresh={() => dispatch('refresh')}
+          />
+        }
         data={state.feedArray}
         numColumns={1}
         contentContainerStyle={styles.contentContainer}
-        keyExtractor={item => item.url}
-        renderItem={({ item }) => <NewsFeed {...item} />}
+        keyExtractor={getUrl}
+        renderItem={newsFeedRenderer}
       />
     </View>
   );
