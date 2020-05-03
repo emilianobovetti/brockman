@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
-import { Linking } from 'expo';
+import { View, TouchableOpacity, Linking, Text } from 'react-native';
 import { styles } from './styles';
 
 export function FeedEntry({ title, link }) {

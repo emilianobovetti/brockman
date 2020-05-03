@@ -1,9 +1,11 @@
 import React, { useReducer, useEffect } from 'react';
-import { View, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { View, FlatList, RefreshControl, StatusBar, StyleSheet } from 'react-native';
 import feeds from './feeds.json';
 import { NewsFeed } from './components/NewsFeed';
 import { fetchNewsFeed, networkFetchNewsFeed } from './NewsFetcher';
-import Constants from 'expo-constants';
+
+// TODO: this method is android-only
+StatusBar.setBackgroundColor('#6d0705');
 
 const initAppState = {
   totalItems: feeds.length,
@@ -70,7 +72,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.statusBar} />
       <FlatList
         refreshControl={
           <RefreshControl
@@ -89,10 +90,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  statusBar: {
-    backgroundColor: "#6d0705",
-    height: Constants.statusBarHeight,
-  },
   container: {
     flex: 1,
     flexDirection: 'column',

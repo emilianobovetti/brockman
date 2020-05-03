@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export ANDROID_HOME="$HOME/.android/sdk"
+export JAVA_HOME="$HOME/.android-studio/jre"
+export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools"
+
+emulator @Nexus_5X_API_29_x86 &
+yarn start

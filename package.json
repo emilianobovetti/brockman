@@ -1,30 +1,37 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
+  "name": "brockman",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "gen": "hitbit-stub",
-    "eject": "expo eject"
+    "android": "react-native run-android",
+    "android-release": "yarn android --variant=release",
+    "android-avd": "bash android-avd",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@fpc/hooks": "^1.2.0",
-    "@fpc/maybe": "^1.0.0",
     "@fpc/result": "^1.0.0",
     "@fpc/stream": "^1.1.0",
     "@fpc/types": "^0.0.9",
-    "expo": "~37.0.8",
-    "react": "~16.13.1",
-    "react-dom": "~16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
-    "react-native-web": "~0.12.2",
+    "@react-native-community/async-storage": "^1.9.0",
+    "react": "16.11.0",
+    "react-native": "0.62.2",
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.6",
-    "@hitbit/stubs": "^0.0.7",
-    "babel-preset-expo": "~8.1.0"
+    "@babel/core": "^7.9.6",
+    "@babel/runtime": "^7.9.6",
+    "@react-native-community/eslint-config": "^1.1.0",
+    "babel-jest": "^25.5.1",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "eslint": "^6.8.0",
+    "jest": "^25.5.4",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-test-renderer": "16.11.0"
   },
-  "private": true
+  "jest": {
+    "preset": "react-native"
+  }
 }
