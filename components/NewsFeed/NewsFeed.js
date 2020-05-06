@@ -6,7 +6,7 @@ import { styles } from './styles';
 export function NewsFeed({ name, url, fetchResult }) {
   if (fetchResult == null) {
     return (
-      <View style={styles.feedRow}>
+      <View style={styles.feedHead}>
         <Text style={styles.feedTitle}>Loading...</Text>
         <Text style={{color: '#fff'}}>↻</Text>
       </View>
@@ -19,7 +19,7 @@ export function NewsFeed({ name, url, fetchResult }) {
     // TODO
     console.error(err);
     return (
-      <View style={styles.feedRow}>
+      <View style={styles.feedHead}>
         <Text style={styles.feedTitle}>Oh no! I've got an error!</Text>
         <Text style={{color: '#fff'}}>✖</Text>
       </View>

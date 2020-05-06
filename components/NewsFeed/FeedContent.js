@@ -3,38 +3,55 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native
 import { FeedEntry } from './FeedEntry';
 import { styles } from './styles';
 
-const toggle = val => !val;
-
 const getLink = ({ link }) => link;
 const feedEntryRenderer = ({ item }) =>
   <FeedEntry title={item.title} link={item.link} />;
 
 export function FeedContent(props) {
-  const [expanded, setExpanded] = useState(false);
-  const entries = props.entries || props.items;
+  const [shownEntries, setShownEntries] = useState([]);
+
+  const allEntries = props.entries || props.items || [];
+  const allEntriesNum = allEntries.length;
+  const shownEntriesNum = shownEntries.length;
+  const expanded = allEntriesNum > 0 && shownEntriesNum > 0;
+
+  const hideEntries = () =>
+    setShownEntries([]);
+
+  const showMoreEntries = () =>
+    setShownEntries(allEntries.slice(0, shownEntriesNum + 5));
 
   return (
     <>
       <TouchableOpacity
         style={[
-          styles.feedRow,
-          expanded && styles.activeFeedRow,
+          styles.feedHead,
+          expanded && styles.activeFeedHead,
         ]}
-        onPress={() => setExpanded(toggle)}
+        onPress={() => expanded ? hideEntries() : showMoreEntries()}
       >
         <Text style={styles.feedTitle}>{props.name}</Text>
       </TouchableOpacity>
 
+      <FlatList
+        numColumns={1}
+        data={shownEntries}
+        keyExtractor={getLink}
+        renderItem={feedEntryRenderer}
+      />
+
       {expanded &&
-        <View style={styles.feedContent}>
-          {/*<Text style={styles.feedTitle}>{props.subtitle || props.description}</Text>*/}
-          {/*<Separator />*/}
-          <FlatList
-            numColumns={1}
-            data={entries}
-            keyExtractor={getLink}
-            renderItem={feedEntryRenderer}
-          />
+        <View elevation={1} style={styles.feedButtonView}>
+          <TouchableOpacity
+            style={{ alignItems: 'center' }}
+            onPress={() =>
+              shownEntriesNum < allEntriesNum ? showMoreEntries() : hideEntries()
+            }
+          >
+            <Text style={styles.feedButtonText}>
+              {shownEntriesNum < allEntriesNum ? 'Show More' : 'Collapse'}
+            </Text>
+          </TouchableOpacity>
         </View>
       }
     </>

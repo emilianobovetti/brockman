@@ -20,6 +20,10 @@
         "url": "https://reactjs.org/feed.xml"
     },
     {
+        "name": "Troy Hunt",
+        "url": "https://www.troyhunt.com/rss"
+    },
+    {
         "name": "Dan Abramov's Blog",
         "url": "https://overreacted.io/rss.xml"
     }
