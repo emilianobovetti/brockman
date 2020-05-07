@@ -1,0 +1,1 @@
+export { NewsFeedList } from './NewsFeedList';

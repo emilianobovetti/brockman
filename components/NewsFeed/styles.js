@@ -12,6 +12,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeFeedHead: {
+    marginBottom: 0,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
@@ -26,21 +27,7 @@ export const styles = StyleSheet.create({
   },
   feedButtonContainer: {
     paddingHorizontal: 7,
-    backgroundColor: '#f3f3f3',
-  },
-  feedButtonView: {
-    marginVertical: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  feedButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    backgroundColor: '#e8e8e8',
   },
   feedButtonText: {
     fontSize: 18,

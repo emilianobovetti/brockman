@@ -772,6 +772,11 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@hitbit/stubs@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@hitbit/stubs/-/stubs-0.0.7.tgz#fb7a893bd68fc6095f1a2aa10408c31e59c49765"
+  integrity sha512-txY5cxgm7bszCfuBuNzRuAAfbzimqcwVR/4l6ZcfN2B2KEnj5IzhrGNyExMCtCR7aFXE34njKMJUMsrtXRjZeQ==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.0.0.tgz#10602de5570baea82f8afbfa2630b24e7a8cfe5b"
@@ -1127,6 +1132,11 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz#e42b1bef12d2415411519fd528e64b593b1363dc"
   integrity sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==
+
+"@react-navigation/material-bottom-tabs@^5.1.15":
+  version "5.1.15"
+  resolved "https://registry.yarnpkg.com/@react-navigation/material-bottom-tabs/-/material-bottom-tabs-5.1.15.tgz#e22acf90adeb6443316ac9a5336185147746e695"
+  integrity sha512-shXOR8zG+MREyTIytjYPkoF15xcrjnIkLJwVqklUpkDuTV60obHs/f5V8VZaWb0zd8RLR/XzCAGMorQA7XMgEQ==
 
 "@sinonjs/commons@^1.7.0":
   version "1.7.2"
