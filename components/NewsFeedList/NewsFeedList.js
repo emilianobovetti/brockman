@@ -33,7 +33,7 @@ const handleRefresh = state => ({
   refreshing: true,
 });
 
-const handleReset = (state, { feeds }) => ({
+const handleReset = ({ feeds }) => ({
   ...initFromFeeds(feeds),
   feedFetcher: fetchNewsFeed,
 });
@@ -41,6 +41,13 @@ const handleReset = (state, { feeds }) => ({
 const handleResponse = (state, { url, result }) => {
   const fetchCount = state.fetchCount + 1;
   const index = state.urlToIndex[url];
+
+  if (index == null) {
+    // When a reponse arrives after "reset" message
+    // has been dispatched
+    return state;
+  }
+
   const feed = state.feedArray[index];
   feed.fetchResult = result;
 
@@ -57,7 +64,7 @@ const reducer = (state, action) => {
     case 'refresh':
       return handleRefresh(state);
     case 'reset':
-      return handleReset(state, action);
+      return handleReset(action);
     case 'response':
       return handleResponse(state, action);
     default:

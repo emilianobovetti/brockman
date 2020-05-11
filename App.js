@@ -1,30 +1,24 @@
-import React, { useState } from 'react';
-import { View, StatusBar, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { StatusBar } from 'react-native';
 import { NewsFeedList } from 'components/NewsFeedList';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import feeds from 'feeds';
 
 // TODO: this method is android-only
 StatusBar.setBackgroundColor('#6d0705');
 
+const FrontendFeeds = () => <NewsFeedList feeds={feeds.frontend} />;
+const NetsecFeeds = () => <NewsFeedList feeds={feeds.netsec} />;
+const Tab = createBottomTabNavigator();
+
 export default function App() {
-  const feedName = useState('frontend');
-
   return (
-    <View style={styles.container}>
-      <NewsFeedList feeds={feeds.frontend} />
-
-      <View style={styles.footer}>
-      </View>
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="frontend" component={FrontendFeeds} />
+        <Tab.Screen name="netsec" component={NetsecFeeds} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  footer: {
-    flexDirection: 'row',
-  }
-});

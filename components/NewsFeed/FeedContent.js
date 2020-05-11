@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, FlatList } from 'react-native';
-import { Button } from 'components/Button';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { FeedEntry } from './FeedEntry';
 import { styles } from './styles';
 
@@ -42,16 +41,18 @@ export function FeedContent(props) {
       />
 
       {expanded &&
-        <Button
-          style={{ alignItems: 'center' }}
-          onPress={() =>
-            shownEntriesNum < allEntriesNum ? showMoreEntries() : hideEntries()
-          }
-        >
-          <Text style={styles.feedButtonText}>
-            {shownEntriesNum < allEntriesNum ? 'Show More' : 'Collapse'}
-          </Text>
-        </Button>
+        <View elevation={1} style={styles.feedButtonContainer}>
+          <TouchableOpacity
+            style={{ alignItems: 'center' }}
+            onPress={() =>
+              shownEntriesNum < allEntriesNum ? showMoreEntries() : hideEntries()
+            }
+          >
+            <Text style={styles.feedButtonText}>
+              {shownEntriesNum < allEntriesNum ? 'Show More' : 'Collapse'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       }
     </>
   );

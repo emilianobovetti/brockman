@@ -1,7 +1,6 @@
 import Cache from './Cache';
 import { btoa } from './Base64';
-import { isString } from '@fpc/types';
-import { Ok, Err } from '@fpc/result';
+import { Ok } from '@fpc/result';
 import { parseNewsFeed } from 'NewsParser';
 
 const CACHE_MISS = {};
@@ -22,10 +21,16 @@ const cacheGet = async url => {
 
   if (isNaN(fetchedAt)) {
     return CACHE_MISS;
-  } else if (Date.now() - fetchedAt > CACHE_MAX_AGE) {
+  }
+
+  if (Date.now() - fetchedAt > CACHE_MAX_AGE) {
     return CACHE_STALE;
-  } else {
-    return text;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    return CACHE_MISS;
   }
 };
 
@@ -38,31 +43,22 @@ const cacheSet = (url, text) => {
   ]);
 };
 
-const doNetworkFetch = async url => {
+export const networkFetchNewsFeed = async url => {
   const resp = await fetch(url);
   const text = await resp.text();
+  const parseRes = parseNewsFeed(text);
 
-  if (isString(text)) {
-    cacheSet(url, text);
+  parseRes.forEach(data => cacheSet(url, JSON.stringify(data)));
 
-    return text;
-  }
-
-  throw new Error('Empty response');
+  return parseRes;
 };
 
-export const networkFetchNewsFeed = url =>
-  doNetworkFetch(url).then(parseNewsFeed, Err);
-
 export const fetchNewsFeed = async url => {
-  const cacheText = await cacheGet(url).catch(() => CACHE_MISS);
-  let textResult;
+  const cacheRes = await cacheGet(url).catch(() => CACHE_MISS);
 
-  if (cacheText === CACHE_MISS || cacheText === CACHE_STALE) {
-    textResult = await doNetworkFetch(url).then(Ok, Err);
-  } else {
-    textResult = Ok(cacheText);
+  if (cacheRes === CACHE_MISS || cacheRes === CACHE_STALE) {
+    return networkFetchNewsFeed(url);
   }
 
-  return textResult.map(parseNewsFeed);
+  return Ok(cacheRes);
 };

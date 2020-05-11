@@ -25,16 +25,29 @@ export const styles = StyleSheet.create({
     borderBottomColor: '#737373',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  feedButtonContainer: {
+  feedButtonOutline: {
     paddingHorizontal: 7,
     backgroundColor: '#e8e8e8',
   },
+  feedButtonContainer: {
+    marginVertical: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  feedButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   feedButtonText: {
     fontSize: 18,
-    flex: 0.92,
+    flex: 0.9,
   },
   feedButtonArrow: {
-    flex: 0.03,
     color: '#ccc',
   },
 });
