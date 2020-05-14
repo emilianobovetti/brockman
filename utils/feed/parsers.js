@@ -1,6 +1,6 @@
 import { DOMParser } from 'xmldom';
 import { Ok, Err } from '@fpc/result';
-import { fromArrayLike } from '@fpc/stream';
+import Stream from '@fpc/stream';
 
 export const parseXML = text => {
   const logs = {
@@ -27,16 +27,16 @@ export const parseXML = text => {
         text,
         warnings: logs.warning,
         errors: logs.error,
-        fatalErrors: logs.fatalError
+        fatalErrors: logs.fatalError,
     })
     : Ok(document);
 };
 
 export const attributesStream = node =>
-  fromArrayLike(node.attributes);
+  Stream.fromArrayLike(node.attributes);
 
 export const childrenStream = node =>
-  fromArrayLike(node.childNodes);
+  Stream.fromArrayLike(node.childNodes);
 
 export const textNodeToJson = node => {
   const [text = ''] = childrenStream(node)
@@ -78,11 +78,11 @@ const rssNodeToJson = node => {
 export const parseRSS = root => {
   const [channel] = childrenStream(root)
     .filter(n => n.tagName === 'channel');
-  
+
   if (channel == null) {
     return Err({
       type: 'structure',
-      message: `Tag 'channel' not found in rss tree `,
+      message: 'Tag \'channel\' not found in rss tree',
       node: root,
     });
   }

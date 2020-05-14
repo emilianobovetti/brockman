@@ -41,14 +41,14 @@ export function FeedContent(props) {
       />
 
       {expanded &&
-        <View elevation={1} style={styles.feedButtonContainer}>
+        <View elevation={1} style={styles.showMoreContainer}>
           <TouchableOpacity
-            style={{ alignItems: 'center' }}
+            style={styles.showMoreButton}
             onPress={() =>
               shownEntriesNum < allEntriesNum ? showMoreEntries() : hideEntries()
             }
           >
-            <Text style={styles.feedButtonText}>
+            <Text style={styles.showMoreText}>
               {shownEntriesNum < allEntriesNum ? 'Show More' : 'Collapse'}
             </Text>
           </TouchableOpacity>

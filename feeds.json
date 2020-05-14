@@ -1,0 +1,58 @@
+[
+  {
+    "name": "StackOverflow Blog",
+    "url": "https://stackoverflow.blog/engineering/feed",
+  },
+  {
+    "name": "Github Engineering",
+    "url": "https://githubengineering.com/atom.xml"
+  },
+  {
+    "name": "Mozilla Hacks",
+    "url": "https://hacks.mozilla.org/feed"
+  },
+  {
+    "name": "React Blog",
+    "url": "https://reactjs.org/feed.xml"
+  },
+  {
+    "name": "React Native Blog",
+    "url": "https://facebook.github.io/react-native/blog/atom.xml",
+  },
+  {
+    "name": "Dan Abramov's Blog",
+    "url": "https://overreacted.io/rss.xml"
+  },
+  {
+    "name": "Jane Street",
+    "url": "https://blogs.janestreet.com/feed.xml"
+  },
+  {
+    "name": "Docker Blog",
+    "url": "https://blog.docker.com/feed"
+  },
+  {
+    "name": "Heroku Blog",
+    "url": "https://blog.heroku.com/engineering/feed"
+  },
+  {
+    "name": "Rust Blog",
+    "url": "https://blog.rust-lang.org/feed.xml"
+  },
+  {
+    "name": "Erlang Solutions",
+    "url": "https://www.erlang-solutions.com/news.rss"
+  },
+  {
+    "name": "Google Online Security",
+    "url": "https://feeds.feedburner.com/GoogleOnlineSecurityBlog"
+  },
+  {
+    "name": "Auth0",
+    "url": "https://auth0.com/blog/rss.xml"
+  },
+  {
+    "name": "Troy Hunt",
+    "url": "https://www.troyhunt.com/rss"
+  }
+]

@@ -3,21 +3,37 @@ import { StatusBar } from 'react-native';
 import { NewsFeedList } from 'components/NewsFeedList';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import feeds from 'feeds';
+import feedList from 'feeds.json';
+import ListIcon from 'assets/list-24px.svg';
+import BookmarksIcon from 'assets/bookmarks-24px.svg';
 
 // TODO: this method is android-only
 StatusBar.setBackgroundColor('#6d0705');
 
-const FrontendFeeds = () => <NewsFeedList feeds={feeds.frontend} />;
-const NetsecFeeds = () => <NewsFeedList feeds={feeds.netsec} />;
+const Feeds = () => <NewsFeedList feeds={feedList} />;
+const Bookmarked = () => null;
+
 const Tab = createBottomTabNavigator();
+
+const navigationIcon = ({ route }, { focused, color, size }) => {
+  switch (route.name) {
+    case 'Feeds':
+      return <ListIcon fill={color} height={size} width={size} />;
+    case 'Bookmarks':
+      return <BookmarksIcon fill={color} height={size} width={size} />;
+  }
+};
+
+const navigatorOptions = routeOpts => ({
+  tabBarIcon: iconOpts => navigationIcon(routeOpts, iconOpts),
+});
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="frontend" component={FrontendFeeds} />
-        <Tab.Screen name="netsec" component={NetsecFeeds} />
+      <Tab.Navigator screenOptions={navigatorOptions}>
+        <Tab.Screen name="Feeds" component={Feeds} />
+        <Tab.Screen name="Bookmarks" component={Bookmarked} />
       </Tab.Navigator>
     </NavigationContainer>
   );

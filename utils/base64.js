@@ -1,12 +1,20 @@
 import { expectString } from '@fpc/types';
 
-// From https://github.com/MaxArt2501/base64-js/blob/master/base64.js
+/* eslint-disable no-bitwise */
 
-// base64 character set, plus padding character (=)
+/*
+ * From https://github.com/MaxArt2501/base64-js/blob/master/base64.js
+ */
+
+/*
+ * Base64 character set, plus padding character (=)
+ */
 const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-// Regular expression to check formal correctness of base64 encoded strings
-const b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
+/*
+ * Regular expression to check formal correctness of base64 encoded strings
+ */
+const b64re = /^(?:[A-Za-z\d+/]{4})*?(?:[A-Za-z\d+/]{2}(?:==)?|[A-Za-z\d+/]{3}=?)?$/;
 
 export const btoa = string => {
   expectString(string);
@@ -18,8 +26,9 @@ export const btoa = string => {
   while (i < string.length) {
       if ((a = string.charCodeAt(i++)) > 255
               || (b = string.charCodeAt(i++)) > 255
-              || (c = string.charCodeAt(i++)) > 255)
-          throw new TypeError('The string to be encoded contains characters outside of the Latin1 range');
+              || (c = string.charCodeAt(i++)) > 255) {
+        throw new TypeError('The string to be encoded contains characters outside of the Latin1 range');
+      }
 
       bitmap = (a << 16) | (b << 8) | c;
       result += b64.charAt(bitmap >> 18 & 63) + b64.charAt(bitmap >> 12 & 63)

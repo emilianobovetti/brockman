@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { FlatList, RefreshControl, StyleSheet } from 'react-native';
-import { fetchNewsFeed, networkFetchNewsFeed } from 'NewsFetcher';
+import { fetchNewsFeed, networkFetchNewsFeed } from 'utils/feed';
 import { NewsFeed } from 'components/NewsFeed';
 
 const initFromFeeds = feeds => {

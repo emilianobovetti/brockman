@@ -8,7 +8,7 @@ export function NewsFeed({ name, url, fetchResult }) {
     return (
       <View style={styles.feedHead}>
         <Text style={styles.feedTitle}>Loading...</Text>
-        <Text style={{color: '#fff'}}>↻</Text>
+        <Text style={styles.feedIcon}>↻</Text>
       </View>
     );
   }
@@ -21,7 +21,7 @@ export function NewsFeed({ name, url, fetchResult }) {
     return (
       <View style={styles.feedHead}>
         <Text style={styles.feedTitle}>Oh no! I've got an error!</Text>
-        <Text style={{color: '#fff'}}>✖</Text>
+        <Text style={styles.feedIcon}>✖</Text>
       </View>
     );
   }

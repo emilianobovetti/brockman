@@ -1,1 +1,0 @@
-export { parseNewsFeed } from './parseNewsFeed';

@@ -1,4 +1,4 @@
-import { parseXML, parseRSS, parseAtom, childrenStream } from './XMLParser';
+import { parseXML, parseRSS, parseAtom, childrenStream } from './parsers';
 import { Err } from '@fpc/result';
 
 const parsers = {
@@ -10,7 +10,7 @@ export const parseNewsFeed = text =>
   parseXML(text).map(document => {
     const [root] = childrenStream(document)
       .filter(n => parsers[n.tagName] != null);
-  
+
     return root == null
       ? Err({
         type: 'structure',
