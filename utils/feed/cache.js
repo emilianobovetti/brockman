@@ -1,41 +1,27 @@
-import Cache from 'utils/cache';
+import Storage from 'utils/storage';
 
 export const CACHE_MISS = {};
 export const CACHE_MAX_AGE = 1000 * 60 * 60 * 12;
 
-const cacheKeys = url => {
-  const key = url.trim();
-
-  return [`${key}:fetchedAt`, `${key}:text`];
-};
-
-export const cacheSet = (url, text) => {
-  const [fetchedAtKey, textKey] = cacheKeys(url);
-
-  return Cache.multiSet([
-    [fetchedAtKey, String(Date.now())],
-    [textKey, text],
-  ]);
-};
+export const cacheSet = (url, data) =>
+  Storage.setItem(url.trim(), JSON.stringify({
+    fetchedAt: Date.now(),
+    data,
+  }));
 
 export const cacheGet = async url => {
-  const [fst = [], snd = []] = await Cache.multiGet(cacheKeys(url));
-  const [, timestamp] = fst;
-  const [, text] = snd;
-  const fetchedAt = parseInt(timestamp, 10);
+  const rawText = await Storage.getItem(url.trim());
 
-  if (isNaN(fetchedAt)) {
+  if (rawText == null) {
     return CACHE_MISS;
   }
+
+  const { fetchedAt, data } = JSON.parse(rawText);
 
   // Stale cached data
   if (Date.now() - fetchedAt > CACHE_MAX_AGE) {
     return CACHE_MISS;
   }
 
-  try {
-    return JSON.parse(text);
-  } catch (err) {
-    return CACHE_MISS;
-  }
+  return data;
 };

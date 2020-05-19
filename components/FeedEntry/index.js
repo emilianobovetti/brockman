@@ -1,0 +1,1 @@
+export { FeedEntry } from './FeedEntry';

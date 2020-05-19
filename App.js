@@ -1,8 +1,10 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { NewsFeedList } from 'components/NewsFeedList';
+import { BookmarkList } from 'components/BookmarkList';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BookmarksProvider } from 'bookmarks';
 import feedList from 'feeds.json';
 import ListIcon from 'assets/list-24px.svg';
 import BookmarksIcon from 'assets/bookmarks-24px.svg';
@@ -11,7 +13,6 @@ import BookmarksIcon from 'assets/bookmarks-24px.svg';
 StatusBar.setBackgroundColor('#6d0705');
 
 const Feeds = () => <NewsFeedList feeds={feedList} />;
-const Bookmarked = () => null;
 
 const Tab = createBottomTabNavigator();
 
@@ -30,11 +31,13 @@ const navigatorOptions = routeOpts => ({
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator screenOptions={navigatorOptions}>
-        <Tab.Screen name="Feeds" component={Feeds} />
-        <Tab.Screen name="Bookmarks" component={Bookmarked} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <BookmarksProvider>
+      <NavigationContainer>
+        <Tab.Navigator screenOptions={navigatorOptions}>
+          <Tab.Screen name="Feeds" component={Feeds} />
+          <Tab.Screen name="Bookmarks" component={BookmarkList} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </BookmarksProvider>
   );
 }

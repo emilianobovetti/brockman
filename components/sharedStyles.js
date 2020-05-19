@@ -15,7 +15,7 @@ const buttonText =  {
   flex: 0.9,
 };
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   feedHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -38,11 +38,6 @@ export const styles = StyleSheet.create({
   feedIcon: {
     color: '#fff',
   },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
   feedButtonOutline: {
     paddingHorizontal: 7,
     backgroundColor: '#e8e8e8',
@@ -54,12 +49,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   feedButtonText: buttonText,
-  feedButtonArrow: {
-    color: '#ccc',
-  },
   showMoreContainer: buttonContainer,
   showMoreButton: {
     alignItems: 'center',
   },
   showMoreText: buttonText,
 });
+
+export default styles;

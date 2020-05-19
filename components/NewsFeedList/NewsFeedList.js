@@ -3,6 +3,10 @@ import { FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { fetchNewsFeed, networkFetchNewsFeed } from 'utils/feed';
 import { NewsFeed } from 'components/NewsFeed';
 
+const emptyState = {
+  urlToIndex: {},
+};
+
 const initFromFeeds = feeds => {
   const urlToIndex = {};
   const feedArray = [];
@@ -27,15 +31,15 @@ const resetFetchResult = feed => {
   return rest;
 };
 
+const handleSetFeeds = ({ feeds }) => ({
+  ...initFromFeeds(feeds),
+  feedFetcher: fetchNewsFeed,
+});
+
 const handleRefresh = state => ({
   ...initFromFeeds(state.feedArray.map(resetFetchResult)),
   feedFetcher: networkFetchNewsFeed,
   refreshing: true,
-});
-
-const handleReset = ({ feeds }) => ({
-  ...initFromFeeds(feeds),
-  feedFetcher: fetchNewsFeed,
 });
 
 const handleResponse = (state, { url, result }) => {
@@ -61,10 +65,10 @@ const handleResponse = (state, { url, result }) => {
 
 const reducer = (state, action) => {
   switch (action.msg) {
+    case 'setFeeds':
+      return handleSetFeeds(action);
     case 'refresh':
       return handleRefresh(state);
-    case 'reset':
-      return handleReset(action);
     case 'response':
       return handleResponse(state, action);
     default:
@@ -76,11 +80,11 @@ const getUrl = ({ url }) => url;
 const newsFeedRenderer = ({ item }) => <NewsFeed {...item} />;
 
 export function NewsFeedList({ feeds = [] }) {
-  const [state, dispatch] = useReducer(reducer, feeds, initFromFeeds);
+  const [state, dispatch] = useReducer(reducer, emptyState);
   const { urlToIndex, feedFetcher } = state;
 
   useEffect(() => {
-    dispatch({ msg: 'reset', feeds });
+    dispatch({ msg: 'setFeeds', feeds });
   }, [feeds]);
 
   useEffect(() => {

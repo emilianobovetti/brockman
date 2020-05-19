@@ -6,7 +6,7 @@ export const networkFetchNewsFeed = async url => {
   const text = await resp.text();
   const parseRes = parseNewsFeed(text);
 
-  parseRes.forEach(data => cacheSet(url, JSON.stringify(data)));
+  parseRes.forEach(data => cacheSet(url, data));
 
   return parseRes;
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { FeedEntry } from './FeedEntry';
-import { styles } from './styles';
+import { FeedEntry } from 'components/FeedEntry';
+import styles from 'components/sharedStyles';
 
 const getLink = ({ link }) => link;
 const feedEntryRenderer = ({ item }) =>
@@ -13,7 +13,7 @@ export function FeedContent(props) {
   const allEntries = props.entries || props.items || [];
   const allEntriesNum = allEntries.length;
   const shownEntriesNum = shownEntries.length;
-  const expanded = allEntriesNum > 0 && shownEntriesNum > 0;
+  const isExpanded = allEntriesNum > 0 && shownEntriesNum > 0;
 
   const hideEntries = () =>
     setShownEntries([]);
@@ -26,9 +26,9 @@ export function FeedContent(props) {
       <TouchableOpacity
         style={[
           styles.feedHead,
-          expanded && styles.activeFeedHead,
+          isExpanded && styles.activeFeedHead,
         ]}
-        onPress={() => expanded ? hideEntries() : showMoreEntries()}
+        onPress={() => isExpanded ? hideEntries() : showMoreEntries()}
       >
         <Text style={styles.feedTitle}>{props.name}</Text>
       </TouchableOpacity>
@@ -40,7 +40,7 @@ export function FeedContent(props) {
         renderItem={feedEntryRenderer}
       />
 
-      {expanded &&
+      {isExpanded &&
         <View elevation={1} style={styles.showMoreContainer}>
           <TouchableOpacity
             style={styles.showMoreButton}
