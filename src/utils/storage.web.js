@@ -1,44 +1,60 @@
-/* global Promise, localStorage */
+/* From: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB */
+const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-const getItem = key => new Promise(resolve =>
-  resolve(localStorage.getItem(key))
-);
+if (indexedDB == null) {
+  throw new Error('IndexedDB not supported');
+}
 
-const setItem = (key, value) => new Promise(resolve =>
-  resolve(localStorage.setItem(key, value))
-);
+const deferredRequest = dbRequest => new Promise((resolve, reject) => {
+  dbRequest.addEventListener('error', reject);
+  dbRequest.addEventListener('success', event =>
+    resolve(event.target.result)
+  );
+});
 
-const removeItem = key => new Promise(resolve =>
-  resolve(localStorage.removeItem(key))
-);
+const DB_NAME = 'AsyncStorage';
+const DB_STORE_NAME = 'KeyValue';
+const READ_ONLY = 'readonly';
+const READ_WRITE = 'readwrite';
 
-const multiGet = keys => Promise.all(
-  keys.map(key => getItem(key).then(value => [key, value]))
-);
+const openDbReq = indexedDB.open(DB_NAME);
+const openDbReqPromise = deferredRequest(openDbReq);
 
-const multiSet = pairs => Promise.all(
-  pairs.map(([key, value]) => setItem(key,value))
-);
+openDbReq.addEventListener('upgradeneeded', event => {
+  const db = event.target.result;
+  db.createObjectStore(DB_STORE_NAME, { keyPath: 'key' });
+});
 
-const multiRemove = keys => Promise.all(
-  keys.map(key => removeItem(key))
-);
+const getKVStore = mode =>
+  openDbReqPromise.then(db =>
+    db.transaction(DB_STORE_NAME, mode).objectStore(DB_STORE_NAME)
+  );
 
-const getAllKeys = () => new Promise(resolve =>
-  resolve(Object.keys(localStorage))
-);
+const getItem = key =>
+  getKVStore(READ_ONLY)
+    .then(store => deferredRequest(store.get(key)))
+    .then(res => res == null ? res : res.value);
 
-const clear = () => new Promise(resolve =>
-  resolve(localStorage.clear())
-);
+const setItem = (key, value) =>
+  getKVStore(READ_WRITE)
+    .then(store => deferredRequest(store.put({ key, value })));
+
+const removeItem = key =>
+  getKVStore(READ_WRITE)
+    .then(store => deferredRequest(store.delete(key)));
+
+const getAllKeys = () =>
+  getKVStore(READ_ONLY)
+    .then(store => deferredRequest(store.getAllKeys()));
+
+const clear = () =>
+  getKVStore(READ_WRITE)
+    .then(store => deferredRequest(store.clear()));
 
 export default {
   getItem,
   setItem,
   removeItem,
-  multiGet,
-  multiSet,
-  multiRemove,
   getAllKeys,
   clear,
 };

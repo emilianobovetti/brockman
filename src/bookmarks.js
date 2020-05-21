@@ -5,11 +5,11 @@ const Ctx = createContext();
 
 const getStoredBookmarks = () =>
   Storage.getItem('bookmarks').then(bookmarks =>
-    bookmarks == null ? [] : JSON.parse(bookmarks)
+    bookmarks == null ? [] : bookmarks
   );
 
 const storeBookmarks = bookmarks =>
-  Storage.setItem('bookmarks', JSON.stringify(bookmarks));
+  Storage.setItem('bookmarks', bookmarks);
 
 const emptyState = {
   urlToIndex: {},
