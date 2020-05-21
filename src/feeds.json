@@ -1,7 +1,7 @@
 [
   {
     "name": "StackOverflow Blog",
-    "url": "https://stackoverflow.blog/engineering/feed",
+    "url": "https://stackoverflow.blog/engineering/feed"
   },
   {
     "name": "Github Engineering",
@@ -17,7 +17,7 @@
   },
   {
     "name": "React Native Blog",
-    "url": "https://facebook.github.io/react-native/blog/atom.xml",
+    "url": "https://facebook.github.io/react-native/blog/atom.xml"
   },
   {
     "name": "Dan Abramov's Blog",

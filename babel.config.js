@@ -4,7 +4,7 @@ module.exports = api => {
   return {
     presets: ['module:metro-react-native-babel-preset'],
     plugins: [
-      ['babel-plugin-module-resolver', { root: ['.'] } ],
+      ['babel-plugin-module-resolver', { root: ['./src'] } ],
     ],
   };
 };

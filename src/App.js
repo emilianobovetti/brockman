@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { NewsFeedList } from 'components/NewsFeedList';
 import { BookmarkList } from 'components/BookmarkList';
 import { NavigationContainer } from '@react-navigation/native';
@@ -12,7 +12,8 @@ import BookmarksIcon from 'assets/bookmarks-24px.svg';
 // TODO: this method is android-only
 StatusBar.setBackgroundColor('#6d0705');
 
-const Feeds = () => <NewsFeedList feeds={feedList} />;
+const Feeds = () =>
+  <NewsFeedList style={styles.newsFeedListContainer} feeds={feedList} />;
 
 const Tab = createBottomTabNavigator();
 
@@ -41,3 +42,9 @@ export default function App() {
     </BookmarksProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  newsFeedListContainer: {
+    marginHorizontal: 25,
+  },
+});

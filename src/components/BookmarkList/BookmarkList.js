@@ -6,7 +6,7 @@ import { FeedEntry } from 'components/FeedEntry';
 const getLink = entry => entry.link;
 const feedEntryRenderer = ({ item }) => <FeedEntry {...item} />;
 
-export function BookmarkList() {
+export function BookmarkList({ style }) {
   const { bookmarks } = useBookmarks();
 
   return (
@@ -15,6 +15,7 @@ export function BookmarkList() {
       numColumns={1}
       keyExtractor={getLink}
       renderItem={feedEntryRenderer}
+      contentContainerStyle={style}
     />
   );
 }

@@ -79,7 +79,7 @@ const reducer = (state, action) => {
 const getUrl = ({ url }) => url;
 const newsFeedRenderer = ({ item }) => <NewsFeed {...item} />;
 
-export function NewsFeedList({ feeds = [] }) {
+export function NewsFeedList({ feeds = [], style }) {
   const [state, dispatch] = useReducer(reducer, emptyState);
   const { urlToIndex, feedFetcher } = state;
 
@@ -103,15 +103,9 @@ export function NewsFeedList({ feeds = [] }) {
       }
       data={state.feedArray}
       numColumns={1}
-      contentContainerStyle={styles.container}
       keyExtractor={getUrl}
       renderItem={newsFeedRenderer}
+      contentContainerStyle={style}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 25,
-  },
-});

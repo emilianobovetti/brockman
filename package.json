@@ -7,7 +7,9 @@
     "android-release": "yarn android --variant=release",
     "android-avd": "bash android-avd",
     "ios": "react-native run-ios",
-    "start": "react-native start",
+    "start": "sh -c 'yarn start-${1:-native}' --",
+    "start-native": "react-native start",
+    "start-web": "webpack-dev-server --open",
     "gen": "hitbit-stub",
     "test": "jest",
     "lint": "eslint ."
@@ -20,10 +22,12 @@
     "@react-navigation/bottom-tabs": "^5.4.7",
     "@react-navigation/native": "^5.4.2",
     "react": "16.13.1",
+    "react-dom": "^16.13.1",
     "react-native": "0.62.2",
     "react-native-safe-area-context": "^1.0.2",
     "react-native-screens": "^2.7.0",
     "react-native-svg": "^12.1.0",
+    "react-native-web": "^0.12.2",
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
@@ -33,11 +37,16 @@
     "@hitbit/stubs": "^0.0.7",
     "@react-native-community/eslint-config": "^1.1.0",
     "babel-jest": "^26.0.1",
+    "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "eslint": "^7.0.0",
+    "html-webpack-plugin": "^4.3.0",
     "jest": "^26.0.1",
     "metro-react-native-babel-preset": "^0.59.0",
-    "react-test-renderer": "16.13.1"
+    "react-test-renderer": "16.13.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
   },
   "jest": {
     "preset": "react-native"
