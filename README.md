@@ -1,4 +1,8 @@
-# Android
+Brockman is a RSS/Atom news aggregator built with react native
+
+![photo_2020-07-24_11-23-10](https://user-images.githubusercontent.com/3957026/88380299-9b2d7680-cda4-11ea-8dd1-273ff55afd04.jpg)
+
+## Android
 
 - Download and install [Android Studio](https://developer.android.com/studio/index.html)
 - Set `ANDROID_HOME` environment variable:
@@ -12,7 +16,7 @@
   `$ANDROID_HOME/platform-tools/adb start-server`
 
   Set `Debug USB` mode on your smartphone and run
-  `$ANDROID_HOME/platform-tools/adb reverse tcp:8081 tcp:8081`
+  `$ANDROID_HOME/platform-tools/adb reverse tcp:8097 tcp:8097`
 - Run android build:
   `yarn android`
 - Start metro server:
