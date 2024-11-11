@@ -5,7 +5,7 @@ const Ctx = createContext();
 
 const getStoredBookmarks = () =>
   Storage.getItem('bookmarks').then(bookmarks =>
-    bookmarks == null ? [] : bookmarks
+    bookmarks == null ? [] : bookmarks,
   );
 
 const storeBookmarks = bookmarks =>
@@ -74,7 +74,7 @@ export function BookmarksProvider({ children }) {
 
   useEffect(() => {
     getStoredBookmarks().then(items =>
-      dispatch({ msg: 'addStoredItems', items })
+      dispatch({ msg: 'addStoredItems', items }),
     );
   }, []);
 

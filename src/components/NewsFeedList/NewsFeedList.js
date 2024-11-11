@@ -89,7 +89,7 @@ export function NewsFeedList({ feeds = [], style }) {
 
   useEffect(() => {
     Object.keys(urlToIndex).forEach(url =>
-      feedFetcher(url).then(result => dispatch({ msg: 'response', url, result }))
+      feedFetcher(url).then(result => dispatch({ msg: 'response', url, result })),
     );
   }, [urlToIndex, feedFetcher]);
 

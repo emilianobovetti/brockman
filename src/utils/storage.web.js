@@ -8,7 +8,7 @@ if (indexedDB == null) {
 const deferredRequest = dbRequest => new Promise((resolve, reject) => {
   dbRequest.addEventListener('error', reject);
   dbRequest.addEventListener('success', event =>
-    resolve(event.target.result)
+    resolve(event.target.result),
   );
 });
 
@@ -27,7 +27,7 @@ openDbReq.addEventListener('upgradeneeded', event => {
 
 const getKVStore = mode =>
   openDbReqPromise.then(db =>
-    db.transaction(DB_STORE_NAME, mode).objectStore(DB_STORE_NAME)
+    db.transaction(DB_STORE_NAME, mode).objectStore(DB_STORE_NAME),
   );
 
 const getItem = key =>
