@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-export ANDROID_HOME="$HOME/.android/sdk"
-export JAVA_HOME="$HOME/.android-studio/jre"
-export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin"
+set -e
 
-avd_name="$(avdmanager list avd | grep Name: | head -n 1 | awk '{ print $2 }')"
-emulator @"$avd_name" &
+export ANDROID_HOME="$HOME/Android/Sdk"
+export ANDROID_AVD_HOME="$HOME/.config/.android/avd"
+
+exec emulator @"$(emulator -list-avds | head -n 1)"
