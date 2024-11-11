@@ -2,22 +2,22 @@ Brockman is a RSS/Atom news aggregator built with react native
 
 ![photo_2020-07-24_11-23-10](https://user-images.githubusercontent.com/3957026/88380299-9b2d7680-cda4-11ea-8dd1-273ff55afd04.jpg)
 
-## Android
+## Local setup on Arch Linux
 
-- Download and install [Android Studio](https://developer.android.com/studio/index.html)
-- Set `ANDROID_HOME` environment variable:
-  `export ANDROID_HOME="/path/to/Android/Sdk"`
+```
+# pacman -S libbsd jdk17-openjdk
+```
 
-  You may want to use jre included in Android Studio:
-  `export JAVA_HOME="/path/to/Android-studio/jre"`
-- Run `sdkmanager`:
-  `$ANDROID_HOME/tools/bin/sdkmanager --licenses`
-- Start `adb` server:
-  `$ANDROID_HOME/platform-tools/adb start-server`
+Then install the following packages from AUR:
 
-  Set `Debug USB` mode on your smartphone and run
-  `$ANDROID_HOME/platform-tools/adb reverse tcp:8097 tcp:8097`
-- Run android build:
-  `yarn android`
-- Start metro server:
-  `yarn start`
+[android-studio](https://aur.archlinux.org/packages/android-studio)
+[android-sdk-platform-tools](https://aur.archlinux.org/packages/android-sdk-platform-tools)
+[android-sdk-cmdline-tools-latest](https://aur.archlinux.org/packages/android-sdk-cmdline-tools-latest)
+[android-emulator](https://aur.archlinux.org/packages/android-emulator)
+
+```
+$ sdkmanager --licenses
+$ yarn
+$ yarn android-avd # start the emulator
+$ ANDROID_HOME="$HOME/Android/Sdk" ANDROID_SDK_ROOT= yarn start
+```
