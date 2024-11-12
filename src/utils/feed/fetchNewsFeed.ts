@@ -1,9 +1,12 @@
-import { Ok } from '@fpc/result';
-import { networkFetchNewsFeed } from './networkFetchNewsFeed';
-import { cacheGet, CACHE_MISS } from './cache';
+import { Ok } from '@fpc/result'
+import type { ParserResult, ParsedFeed } from './parseNewsFeed'
+import { networkFetchNewsFeed } from './networkFetchNewsFeed'
+import { cacheGet, CACHE_MISS } from './cache'
 
-export const fetchNewsFeed = async url => {
-  const cacheRes = await cacheGet(url).catch(() => CACHE_MISS);
+export async function fetchNewsFeed(url: string): Promise<ParserResult> {
+  const cacheRes = await cacheGet<ParsedFeed>(url).catch(() => CACHE_MISS)
 
-  return cacheRes === CACHE_MISS ? networkFetchNewsFeed(url) : Ok(cacheRes);
-};
+  return cacheRes === CACHE_MISS
+    ? networkFetchNewsFeed(url)
+    : Ok(cacheRes as ParsedFeed)
+}

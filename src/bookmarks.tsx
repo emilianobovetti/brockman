@@ -1,93 +1,127 @@
-import { createContext, useReducer, useEffect, useContext } from 'react';
-import Storage from '@/utils/storage';
+import type { Dispatch, ReactNode } from 'react'
+import { createContext, useReducer, useEffect, useContext } from 'react'
+import type { RSSFlatData } from '@/utils/feed/parsers'
+import Storage from '@/utils/storage'
 
-const emptyState = {
+export interface Bookmark extends RSSFlatData {
+  title: string
+  link: string
+}
+
+interface State {
+  urlToIndex: { [url: string]: number }
+  bookmarks: Bookmark[]
+  isStorageLoaded: boolean
+}
+
+const emptyState: State = {
   urlToIndex: {},
-  itemArray: [],
+  bookmarks: [],
   isStorageLoaded: false,
-};
+}
 
-const Ctx = createContext(emptyState);
+const noop = () => {}
 
-const getStoredBookmarks = () =>
-  Storage.getItem('bookmarks').then((bookmarks) =>
-    bookmarks == null ? [] : bookmarks,
-  );
+type HookContext = [State, Dispatch<Action>]
 
-const storeBookmarks = (bookmarks) => Storage.setItem('bookmarks', bookmarks);
+const Ctx = createContext<HookContext>([emptyState, noop])
 
-const handleAddStoredItems = ({ itemArray }, items) => {
-  const newItems = itemArray.concat(items);
-  const urlToIndex = {};
-  /* eslint-disable-next-line no-return-assign */
-  newItems.forEach((item, index) => (urlToIndex[item.link] = index));
+async function getStoredBookmarks(): Promise<Bookmark[]> {
+  const bookmarks = await Storage.getItem<Bookmark[]>('bookmarks')
 
-  if (itemArray.length > 0) {
-    storeBookmarks(newItems);
+  return bookmarks ?? []
+}
+
+function storeBookmarks(bookmarks: Bookmark[]) {
+  return Storage.setItem('bookmarks', bookmarks)
+}
+
+function handleAddStoredItems({ bookmarks }: State, items: Bookmark[]) {
+  const newItems = bookmarks.concat(items)
+  const urlToIndex: State['urlToIndex'] = {}
+
+  newItems.forEach((item, index) => {
+    urlToIndex[item.link] = index
+  })
+
+  if (bookmarks.length > 0) {
+    storeBookmarks(newItems)
   }
 
-  return { itemArray: newItems, urlToIndex, isStorageLoaded: true };
-};
+  return { bookmarks: newItems, urlToIndex, isStorageLoaded: true }
+}
 
-const handleAddItem = (state, newItem) => {
-  const { urlToIndex, itemArray } = state;
-  const newItems = itemArray.slice();
-  const newMap = { ...urlToIndex };
-  newMap[newItem.link] = newItems.push(newItem) - 1;
+function handleAddItem(state: State, newItem: Bookmark) {
+  const { urlToIndex, bookmarks } = state
+  const newItems = bookmarks.slice()
+  const newMap = { ...urlToIndex }
+  newMap[newItem.link] = newItems.push(newItem) - 1
 
   if (state.isStorageLoaded) {
-    storeBookmarks(newItems);
+    storeBookmarks(newItems)
   }
 
-  return { ...state, itemArray: newItems, urlToIndex: newMap };
-};
+  return { ...state, bookmarks: newItems, urlToIndex: newMap }
+}
 
-const handleRemoveItem = (state, item) => {
-  const { urlToIndex, itemArray } = state;
-  const newItems = itemArray.filter((i) => i.link !== item.link);
-  const newMap = { ...urlToIndex };
-  delete newMap[item.link];
+function handleRemoveItem(state: State, item: Bookmark) {
+  const { urlToIndex, bookmarks } = state
+  const newItems = bookmarks.filter(bm => bm.link !== item.link)
+  const newMap = { ...urlToIndex }
+  delete newMap[item.link]
 
   if (state.isStorageLoaded) {
-    storeBookmarks(newItems);
+    storeBookmarks(newItems)
   }
 
-  return { ...state, itemArray: newItems, urlToIndex: newMap };
-};
+  return { ...state, bookmarks: newItems, urlToIndex: newMap }
+}
 
-const reducer = (state, action) => {
+type AddStoredItemsAction = { msg: 'addStoredItems'; items: Bookmark[] }
+type AddItemAction = { msg: 'addItem'; item: Bookmark }
+type RemoveItemAction = { msg: 'removeItem'; item: Bookmark }
+type Action = AddStoredItemsAction | AddItemAction | RemoveItemAction
+
+function reducer(state: State, action: Action) {
   switch (action.msg) {
     case 'addStoredItems':
-      return handleAddStoredItems(state, action.items);
+      return handleAddStoredItems(state, action.items)
     case 'addItem':
-      return handleAddItem(state, action.item);
+      return handleAddItem(state, action.item)
     case 'removeItem':
-      return handleRemoveItem(state, action.item);
+      return handleRemoveItem(state, action.item)
     default:
-      throw new Error(`Unknown message '${action.msg}'`);
+      // @ts-ignore: Property 'msg' does not exist on type 'never'
+      throw new Error(`Unknown action message: '${action?.msg}'`)
   }
-};
+}
 
-export function BookmarksProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, emptyState);
+interface BookmarksProviderProps {
+  children?: ReactNode | undefined
+}
+
+export function BookmarksProvider({ children }: BookmarksProviderProps) {
+  const ctx = useReducer(reducer, emptyState)
 
   useEffect(() => {
-    getStoredBookmarks().then((items) =>
-      dispatch({ msg: 'addStoredItems', items }),
-    );
-  }, []);
+    const [, dispatch] = ctx
 
-  return <Ctx.Provider value={[state, dispatch]}>{children}</Ctx.Provider>;
+    getStoredBookmarks().then(items =>
+      dispatch({ msg: 'addStoredItems', items })
+    )
+  }, [])
+
+  return <Ctx.Provider value={ctx}>{children}</Ctx.Provider>
 }
 
 export const useBookmarks = () => {
-  const [state, dispatch] = useContext(Ctx);
-  const { itemArray: bookmarks, urlToIndex } = state;
+  const [state, dispatch] = useContext(Ctx)
+  const { bookmarks, urlToIndex } = state
 
   return {
     bookmarks,
-    addBookmark: (item) => dispatch({ msg: 'addItem', item }),
-    removeBookmark: (item) => dispatch({ msg: 'removeItem', item }),
-    isBookmarked: (item) => urlToIndex[item.link] != null,
-  };
-};
+    addBookmark: (item: Bookmark) => dispatch({ msg: 'addItem', item }),
+    removeBookmark: (item: Bookmark) => dispatch({ msg: 'removeItem', item }),
+    isBookmarked: (item: Bookmark) => urlToIndex[item.link] != null,
+  }
+}

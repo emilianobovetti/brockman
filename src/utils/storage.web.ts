@@ -1,55 +1,65 @@
 /* From: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB */
-const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+const indexedDB = window.indexedDB
 
 if (indexedDB == null) {
-  throw new Error('IndexedDB not supported');
+  throw new Error('IndexedDB not supported')
 }
 
-const deferredRequest = dbRequest => new Promise((resolve, reject) => {
-  dbRequest.addEventListener('error', reject);
-  dbRequest.addEventListener('success', event =>
-    resolve(event.target.result),
-  );
-});
+function deferredRequest<T>(dbRequest: IDBRequest<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    dbRequest.addEventListener('error', reject)
+    dbRequest.addEventListener('success', event =>
+      resolve((event.target as IDBRequest<T>).result)
+    )
+  })
+}
 
-const DB_NAME = 'AsyncStorage';
-const DB_STORE_NAME = 'KeyValue';
-const READ_ONLY = 'readonly';
-const READ_WRITE = 'readwrite';
+const DB_NAME = 'AsyncStorage'
+const DB_STORE_NAME = 'KeyValue'
+const READ_ONLY = 'readonly'
+const READ_WRITE = 'readwrite'
 
-const openDbReq = indexedDB.open(DB_NAME);
-const openDbReqPromise = deferredRequest(openDbReq);
+const openDbReq = indexedDB.open(DB_NAME)
+const openDbReqPromise = deferredRequest<IDBDatabase>(openDbReq)
 
-openDbReq.addEventListener('upgradeneeded', event => {
-  const db = event.target.result;
-  db.createObjectStore(DB_STORE_NAME, { keyPath: 'key' });
-});
+openDbReq.addEventListener<'upgradeneeded'>('upgradeneeded', event => {
+  const db = (event.target as IDBRequest<IDBDatabase>).result
+  db.createObjectStore(DB_STORE_NAME, { keyPath: 'key' })
+})
 
-const getKVStore = mode =>
-  openDbReqPromise.then(db =>
-    db.transaction(DB_STORE_NAME, mode).objectStore(DB_STORE_NAME),
-  );
+function getKVStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
+  return openDbReqPromise.then(db =>
+    db.transaction(DB_STORE_NAME, mode).objectStore(DB_STORE_NAME)
+  )
+}
 
-const getItem = key =>
-  getKVStore(READ_ONLY)
+function getItem<T>(key: any): Promise<T> {
+  return getKVStore(READ_ONLY)
     .then(store => deferredRequest(store.get(key)))
-    .then(res => res == null ? res : res.value);
+    .then(res => (res == null ? res : res.value))
+}
 
-const setItem = (key, value) =>
-  getKVStore(READ_WRITE)
-    .then(store => deferredRequest(store.put({ key, value })));
+function setItem(key: any, value: any): Promise<IDBValidKey> {
+  return getKVStore(READ_WRITE).then(store =>
+    deferredRequest(store.put({ key, value }))
+  )
+}
 
-const removeItem = key =>
-  getKVStore(READ_WRITE)
-    .then(store => deferredRequest(store.delete(key)));
+function removeItem(key: any): Promise<void> {
+  return getKVStore(READ_WRITE).then(store =>
+    deferredRequest(store.delete(key))
+  )
+}
 
-const getAllKeys = () =>
-  getKVStore(READ_ONLY)
-    .then(store => deferredRequest(store.getAllKeys()));
+function getAllKeys(): Promise<IDBValidKey[]> {
+  return getKVStore(READ_ONLY).then(store =>
+    deferredRequest(store.getAllKeys())
+  )
+}
 
-const clear = () =>
-  getKVStore(READ_WRITE)
-    .then(store => deferredRequest(store.clear()));
+function clear(): Promise<void> {
+  return getKVStore(READ_WRITE).then(store => deferredRequest(store.clear()))
+}
 
 export default {
   getItem,
@@ -57,4 +67,4 @@ export default {
   removeItem,
   getAllKeys,
   clear,
-};
+}

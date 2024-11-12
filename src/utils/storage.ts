@@ -1,21 +1,26 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const getItem = key =>
-  AsyncStorage.getItem(key).then(value =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  );
+async function getItem<T>(key: string): Promise<T> {
+  const value = await AsyncStorage.getItem(key)
 
-const setItem = (key, value) =>
-  AsyncStorage.setItem(key, JSON.stringify(value));
+  return typeof value === 'string' ? JSON.parse(value) : value
+}
 
-const removeItem = key =>
-  AsyncStorage.removeItem(key);
+function setItem(key: string, value: any): Promise<void> {
+  return AsyncStorage.setItem(key, JSON.stringify(value))
+}
 
-const getAllKeys = () =>
-  AsyncStorage.getAllKeys();
+function removeItem(key: string): Promise<void> {
+  return AsyncStorage.removeItem(key)
+}
 
-const clear = () =>
-  AsyncStorage.clear();
+function getAllKeys(): Promise<readonly string[]> {
+  return AsyncStorage.getAllKeys()
+}
+
+function clear(): Promise<void> {
+  return AsyncStorage.clear()
+}
 
 export default {
   getItem,
@@ -23,4 +28,4 @@ export default {
   removeItem,
   getAllKeys,
   clear,
-};
+}

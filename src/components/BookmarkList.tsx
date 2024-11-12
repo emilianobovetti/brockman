@@ -1,12 +1,21 @@
-import { FlatList } from 'react-native';
-import { useBookmarks } from '@/bookmarks';
-import { FeedEntry } from '@/components/FeedEntry';
+import type { StyleProp, ViewStyle } from 'react-native'
+import { FlatList } from 'react-native'
+import type { ListRenderItemInfo } from '@react-native/virtualized-lists'
+import type { Bookmark } from '@/bookmarks'
+import { useBookmarks } from '@/bookmarks'
+import { FeedEntry } from '@/components/FeedEntry'
 
-const getLink = (entry) => entry.link;
-const feedEntryRenderer = ({ item }) => <FeedEntry {...item} />;
+const getLink = (entry: Bookmark) => entry.link
+const feedEntryRenderer = ({ item }: ListRenderItemInfo<Bookmark>) => (
+  <FeedEntry item={item} />
+)
 
-export function BookmarkList({ style }) {
-  const { bookmarks } = useBookmarks();
+interface BookmarkListProps {
+  style: StyleProp<ViewStyle>
+}
+
+export function BookmarkList({ style }: BookmarkListProps) {
+  const { bookmarks } = useBookmarks()
 
   return (
     <FlatList
@@ -16,5 +25,5 @@ export function BookmarkList({ style }) {
       renderItem={feedEntryRenderer}
       contentContainerStyle={style}
     />
-  );
+  )
 }

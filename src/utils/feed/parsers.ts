@@ -1,25 +1,47 @@
-import { DOMParser } from 'xmldom';
-import { Ok, Err } from '@fpc/result';
-import Stream from '@fpc/stream';
+import type { LogLevel } from 'xmldom'
+import { DOMParser } from 'xmldom'
+import type { Result } from '@fpc/result'
+import { Ok, Err } from '@fpc/result'
+import Stream from '@fpc/stream'
 
-export const parseXML = text => {
-  const logs = {
+interface ErrorLog {
+  message: any
+  lineNumber: string | number
+  columnNumber: string | number
+}
+
+interface ParseLogs {
+  warning: ErrorLog[]
+  error: ErrorLog[]
+  fatalError: ErrorLog[]
+}
+
+export interface XMLParseErrors {
+  type: 'parsing'
+  text: string
+  warnings: ErrorLog[]
+  errors: ErrorLog[]
+  fatalErrors: ErrorLog[]
+}
+
+export function parseXML(text: string): Result<XMLParseErrors, Document> {
+  const logs: ParseLogs = {
     warning: [],
     error: [],
     fatalError: [],
-  };
+  }
 
   const domparserOpts = {
-    locator: {},
-    errorHandler: (level, message) => {
-      const { lineNumber, columnNumber } = domparserOpts.locator;
+    locator: { lineNumber: 'none', columnNumber: 'none' },
+    errorHandler(level: LogLevel, message: any) {
+      const { lineNumber, columnNumber } = domparserOpts.locator
 
-      logs[level].push({ message, lineNumber, columnNumber });
+      logs[level].push({ message, lineNumber, columnNumber })
     },
-  };
+  }
 
-  const domparser = new DOMParser(domparserOpts);
-  const document = domparser.parseFromString(text, 'text/xml');
+  const domparser = new DOMParser(domparserOpts)
+  const document = domparser.parseFromString(text, 'text/xml')
 
   return logs.error.length > 0 || logs.fatalError.length > 0
     ? Err({
@@ -28,106 +50,144 @@ export const parseXML = text => {
         warnings: logs.warning,
         errors: logs.error,
         fatalErrors: logs.fatalError,
-    })
-    : Ok(document);
-};
+      })
+    : Ok(document)
+}
 
-export const attributesStream = node =>
-  Stream.fromArrayLike(node.attributes);
+export function attributesStream(node: Node): Stream<Attr> {
+  return Stream.fromArrayLike((node as Element).attributes ?? [])
+}
 
-export const childrenStream = node =>
-  Stream.fromArrayLike(node.childNodes);
+export function childrenStream<T extends Node>(node: {
+  childNodes: NodeListOf<T>
+}): Stream<T> {
+  return Stream.fromArrayLike(node.childNodes)
+}
 
-export const textNodeToJson = node => {
-  const [text = ''] = childrenStream(node)
-    .filter(child => child.data != null)
-    .map(child => child.data.trim());
+export function extractTextNode(node: Node) {
+  const element: Element = node as Element
 
-  return text === '' ? [] : [node.tagName, text];
-};
+  if (element.tagName == null) {
+    return []
+  }
 
-const attributesToJson = (attributes, json = {}) =>
-  attributes.reduce((acc, attribute) => {
-    acc[attribute.nodeName] = attribute.nodeValue;
+  const [text = ''] = childrenStream<ChildNode>(element)
+    .filter(child => typeof (child as Text)?.data === 'string')
+    .map(child => (child as Text).data.trim())
 
-    return acc;
-  }, json);
+  return text === '' ? [] : [element.tagName, text]
+}
 
-const childrenToJson = (children, json = {}) =>
-  children
-    .filter(child => child.childNodes != null)
-    .reduce((acc, child) => {
-      const [childTag, childText] = textNodeToJson(child);
+export type RSSFlatData = { [name: string]: string | null }
 
-      if (childTag != null) {
-        acc[childTag] = childText;
-      }
+function extractAttributes(attributes: Stream<Attr>, json: RSSFlatData = {}) {
+  for (const { nodeName, nodeValue } of attributes) {
+    if (nodeValue != null) {
+      json[nodeName] = nodeValue
+    }
+  }
 
-      return acc;
-    }, json);
+  return json
+}
 
-const rssNodeToJson = node => {
-  let json = {};
+function extractTextNodes(children: Stream<Node>, json: RSSFlatData = {}) {
+  for (const child of children.filter(child => child.childNodes != null)) {
+    const [childTag, childText] = extractTextNode(child)
 
-  json = attributesToJson(attributesStream(node), json);
-  json = childrenToJson(childrenStream(node), json);
+    if (childTag != null) {
+      json[childTag] = childText
+    }
+  }
 
-  return json;
-};
+  return json
+}
 
-export const parseRSS = root => {
-  const [channel] = childrenStream(root)
-    .filter(n => n.tagName === 'channel');
+function rssNodeToJson(node: Node): RSSFlatData {
+  let json = {}
+
+  json = extractAttributes(attributesStream(node), json)
+  json = extractTextNodes(childrenStream(node), json)
+
+  return json
+}
+
+export type RSSParseError = {
+  type: 'structure'
+  message: string
+  node: Node
+}
+
+export type RSSData = {
+  type: 'rss'
+  items: RSSFlatData[]
+  data: RSSFlatData
+}
+
+export function parseRSS(root: Node): Result<RSSParseError, RSSData> {
+  const [channel] = childrenStream(root).filter(
+    node => (node as Element).tagName === 'channel'
+  )
 
   if (channel == null) {
     return Err({
       type: 'structure',
-      message: 'Tag \'channel\' not found in rss tree',
+      message: "Tag 'channel' not found in rss tree",
       node: root,
-    });
+    })
   }
 
-  const json = rssNodeToJson(channel);
+  const data = rssNodeToJson(channel as Element)
 
-  json.items = childrenStream(channel)
-    .filter(n => n.tagName === 'item')
+  const items = childrenStream(channel)
+    .filter(node => (node as Element).tagName === 'item')
     .map(rssNodeToJson)
-    .toArray();
+    .toArray()
 
-  json.type = 'rss';
+  return Ok({
+    type: 'rss',
+    items,
+    data,
+  })
+}
 
-  return Ok(json);
-};
-
-const atomNodeToJson = node => {
-  let json = {};
+function atomNodeToJson(node: Node) {
+  let json: RSSFlatData = {}
 
   const children = childrenStream(node)
-    .forEach(child => {
-      if (child.tagName === 'link') {
-        const atts = attributesToJson(attributesStream(child));
 
-        if (atts.rel !== 'self') {
-          json.link = atts.href.trim();
-        }
+  for (const child of children) {
+    if ((child as Element).tagName === 'link') {
+      const attrs = extractAttributes(attributesStream(child))
+
+      if (attrs.rel !== 'self' && typeof attrs.href === 'string') {
+        json.link = attrs.href.trim()
       }
-    });
+    }
+  }
 
-  json = attributesToJson(attributesStream(node), json);
-  json = childrenToJson(children, json);
+  json = extractAttributes(attributesStream(node), json)
+  json = extractTextNodes(children, json)
 
-  return json;
-};
+  return json
+}
 
-export const parseAtom = root => {
-  const json = atomNodeToJson(root);
+export type AtomData = {
+  type: 'atom'
+  entries: RSSFlatData[]
+  data: RSSFlatData
+}
 
-  json.entries = childrenStream(root)
-    .filter(n => n.tagName === 'entry')
+export function parseAtom(root: Node): Result<any, AtomData> {
+  const data = atomNodeToJson(root)
+
+  const entries = childrenStream(root)
+    .filter(node => (node as Element).tagName === 'entry')
     .map(atomNodeToJson)
-    .toArray();
+    .toArray()
 
-  json.type = 'atom';
-
-  return Ok(json);
-};
+  return Ok({
+    type: 'atom',
+    entries,
+    data,
+  })
+}
