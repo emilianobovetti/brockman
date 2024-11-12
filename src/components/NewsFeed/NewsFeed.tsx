@@ -1,7 +1,6 @@
-import React from 'react';
 import { View, Text } from 'react-native';
 import { FeedContent } from './FeedContent';
-import styles from 'components/sharedStyles';
+import styles from '@/components/sharedStyles';
 
 export function NewsFeed({ name, url, fetchResult }) {
   if (fetchResult == null) {

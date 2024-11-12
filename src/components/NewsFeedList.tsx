@@ -1,17 +1,17 @@
-import React, { useReducer, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
-import { fetchNewsFeed, networkFetchNewsFeed } from 'utils/feed';
-import { NewsFeed } from 'components/NewsFeed';
+import { fetchNewsFeed, networkFetchNewsFeed } from '@/utils/feed';
+import { NewsFeed } from '@/components/NewsFeed';
 
 const emptyState = {
   urlToIndex: {},
 };
 
-const initFromFeeds = feeds => {
+const initFromFeeds = (feeds) => {
   const urlToIndex = {};
   const feedArray = [];
 
-  feeds.forEach(feed => {
+  feeds.forEach((feed) => {
     urlToIndex[feed.url] = feedArray.push(feed) - 1;
   });
 
@@ -25,7 +25,7 @@ const initFromFeeds = feeds => {
   };
 };
 
-const resetFetchResult = feed => {
+const resetFetchResult = (feed) => {
   const { fetchResult, ...rest } = feed;
 
   return rest;
@@ -36,7 +36,7 @@ const handleSetFeeds = ({ feeds }) => ({
   feedFetcher: fetchNewsFeed,
 });
 
-const handleRefresh = state => ({
+const handleRefresh = (state) => ({
   ...initFromFeeds(state.feedArray.map(resetFetchResult)),
   feedFetcher: networkFetchNewsFeed,
   refreshing: true,
@@ -88,8 +88,10 @@ export function NewsFeedList({ feeds = [], style }) {
   }, [feeds]);
 
   useEffect(() => {
-    Object.keys(urlToIndex).forEach(url =>
-      feedFetcher(url).then(result => dispatch({ msg: 'response', url, result })),
+    Object.keys(urlToIndex).forEach((url) =>
+      feedFetcher(url).then((result) =>
+        dispatch({ msg: 'response', url, result }),
+      ),
     );
   }, [urlToIndex, feedFetcher]);
 

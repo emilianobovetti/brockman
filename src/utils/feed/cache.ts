@@ -1,4 +1,4 @@
-import Storage from 'utils/storage';
+import Storage from '@/utils/storage';
 
 export const CACHE_MISS = {};
 export const CACHE_MAX_AGE = 1000 * 60 * 60 * 12;
@@ -9,7 +9,7 @@ export const cacheSet = (url, data) =>
     data,
   });
 
-export const cacheGet = async url => {
+export const cacheGet = async (url) => {
   const result = await Storage.getItem(url.trim());
 
   if (result == null) {

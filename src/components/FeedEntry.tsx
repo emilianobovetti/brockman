@@ -1,9 +1,8 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
-import { useBookmarks } from 'bookmarks';
-import BookmarkBorderIcon from 'assets/bookmark_border-24px.svg';
-import BookmarkIcon from 'assets/bookmark-24px.svg';
-import styles from 'components/sharedStyles';
+import { useBookmarks } from '@/bookmarks';
+import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
+import BookmarkIcon from '@/assets/bookmark-24px.svg';
+import styles from '@/components/sharedStyles';
 
 export function FeedEntry({ title, link }) {
   const item = { title, link };
@@ -17,13 +16,13 @@ export function FeedEntry({ title, link }) {
           onPress={() => Linking.openURL(link)}
           onLongPress={() =>
             isBookmarked(item) ? removeBookmark(item) : addBookmark(item)
-          }
-        >
+          }>
           <Text style={styles.feedButtonText}>{title}</Text>
-          { isBookmarked(item)
-            ? <BookmarkIcon fill="#000" />
-            : <BookmarkBorderIcon fill="#000" />
-          }
+          {isBookmarked(item) ? (
+            <BookmarkIcon fill="#000" />
+          ) : (
+            <BookmarkBorderIcon fill="#000" />
+          )}
         </TouchableOpacity>
       </View>
     </View>

@@ -1,9 +1,8 @@
-import React from 'react';
 import { FlatList } from 'react-native';
-import { useBookmarks } from 'bookmarks';
-import { FeedEntry } from 'components/FeedEntry';
+import { useBookmarks } from '@/bookmarks';
+import { FeedEntry } from '@/components/FeedEntry';
 
-const getLink = entry => entry.link;
+const getLink = (entry) => entry.link;
 const feedEntryRenderer = ({ item }) => <FeedEntry {...item} />;
 
 export function BookmarkList({ style }) {

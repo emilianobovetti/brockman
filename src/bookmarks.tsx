@@ -1,15 +1,5 @@
-import React, { createContext, useReducer, useEffect, useContext } from 'react';
-import Storage from 'utils/storage';
-
-const Ctx = createContext();
-
-const getStoredBookmarks = () =>
-  Storage.getItem('bookmarks').then(bookmarks =>
-    bookmarks == null ? [] : bookmarks,
-  );
-
-const storeBookmarks = bookmarks =>
-  Storage.setItem('bookmarks', bookmarks);
+import { createContext, useReducer, useEffect, useContext } from 'react';
+import Storage from '@/utils/storage';
 
 const emptyState = {
   urlToIndex: {},
@@ -17,11 +7,20 @@ const emptyState = {
   isStorageLoaded: false,
 };
 
+const Ctx = createContext(emptyState);
+
+const getStoredBookmarks = () =>
+  Storage.getItem('bookmarks').then((bookmarks) =>
+    bookmarks == null ? [] : bookmarks,
+  );
+
+const storeBookmarks = (bookmarks) => Storage.setItem('bookmarks', bookmarks);
+
 const handleAddStoredItems = ({ itemArray }, items) => {
   const newItems = itemArray.concat(items);
   const urlToIndex = {};
   /* eslint-disable-next-line no-return-assign */
-  newItems.forEach((item, index) => urlToIndex[item.link] = index);
+  newItems.forEach((item, index) => (urlToIndex[item.link] = index));
 
   if (itemArray.length > 0) {
     storeBookmarks(newItems);
@@ -45,7 +44,7 @@ const handleAddItem = (state, newItem) => {
 
 const handleRemoveItem = (state, item) => {
   const { urlToIndex, itemArray } = state;
-  const newItems = itemArray.filter(i => i.link !== item.link);
+  const newItems = itemArray.filter((i) => i.link !== item.link);
   const newMap = { ...urlToIndex };
   delete newMap[item.link];
 
@@ -73,16 +72,12 @@ export function BookmarksProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, emptyState);
 
   useEffect(() => {
-    getStoredBookmarks().then(items =>
+    getStoredBookmarks().then((items) =>
       dispatch({ msg: 'addStoredItems', items }),
     );
   }, []);
 
-  return (
-    <Ctx.Provider value={[state, dispatch]}>
-      {children}
-    </Ctx.Provider>
-  );
+  return <Ctx.Provider value={[state, dispatch]}>{children}</Ctx.Provider>;
 }
 
 export const useBookmarks = () => {
@@ -91,8 +86,8 @@ export const useBookmarks = () => {
 
   return {
     bookmarks,
-    addBookmark: item => dispatch({ msg: 'addItem', item }),
-    removeBookmark: item => dispatch({ msg: 'removeItem', item }),
-    isBookmarked: item => urlToIndex[item.link] != null,
+    addBookmark: (item) => dispatch({ msg: 'addItem', item }),
+    removeBookmark: (item) => dispatch({ msg: 'removeItem', item }),
+    isBookmarked: (item) => urlToIndex[item.link] != null,
   };
 };

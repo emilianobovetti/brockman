@@ -1,16 +1,15 @@
-import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { NewsFeedList } from 'components/NewsFeedList';
-import { BookmarkList } from 'components/BookmarkList';
-import { BookmarksProvider } from 'bookmarks';
-import feedList from 'feeds.json';
+import { NewsFeedList } from '@/components/NewsFeedList';
+import { BookmarkList } from '@/components/BookmarkList';
+import { BookmarksProvider } from '@/bookmarks';
+import feedList from '@/feeds.json';
 
 export default function App() {
   return (
     <BookmarksProvider>
       <View style={styles.container}>
         <NewsFeedList style={styles.section} feeds={feedList} />
-        <BookmarkList style={styles.section}/>
+        <BookmarkList style={styles.section} />
       </View>
     </BookmarksProvider>
   );
