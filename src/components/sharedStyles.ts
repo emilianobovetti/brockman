@@ -10,7 +10,7 @@ const buttonContainer = {
   borderColor: '#eee',
 };
 
-const buttonText =  {
+const buttonText = {
   fontSize: 18,
   flex: 0.9,
 };

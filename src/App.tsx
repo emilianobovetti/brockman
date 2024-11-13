@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import { NewsFeedList } from '@/components/NewsFeedList';
+import { PaperProvider, MD3LightTheme } from 'react-native-paper';
+import { NewsFeedList } from '@/components/GroupedFeed';
 import { BookmarkList } from '@/components/BookmarkList';
 import { NavigationContainer } from '@react-navigation/native';
 import type { RouteProp, ParamListBase } from '@react-navigation/core';
@@ -35,8 +36,8 @@ interface IconOpts {
   size: number;
 }
 
-const navigationIcon = ({ route }: RouteOpts, icon: IconOpts) => {
-  const { focused, color, size } = icon;
+function navigationIcon({ route }: RouteOpts, icon: IconOpts) {
+  const { color, size } = icon;
 
   switch (route.name) {
     case 'Feeds':
@@ -44,7 +45,7 @@ const navigationIcon = ({ route }: RouteOpts, icon: IconOpts) => {
     case 'Bookmarks':
       return <BookmarksIcon fill={color} height={size} width={size} />;
   }
-};
+}
 
 type ScreenOptions = ComponentProps<typeof Tab.Navigator>['screenOptions'];
 
@@ -57,12 +58,14 @@ const navigatorOptions: ScreenOptions = (routeOpts) => {
 export default function App() {
   return (
     <BookmarksProvider>
-      <NavigationContainer>
-        <Tab.Navigator screenOptions={navigatorOptions}>
-          <Tab.Screen name="Feeds" component={Feeds} />
-          <Tab.Screen name="Bookmarks" component={Bookmarks} />
-        </Tab.Navigator>
-      </NavigationContainer>
+      <PaperProvider theme={MD3LightTheme}>
+        <NavigationContainer>
+          <Tab.Navigator screenOptions={navigatorOptions}>
+            <Tab.Screen name="Feeds" component={Feeds} />
+            <Tab.Screen name="Bookmarks" component={Bookmarks} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
     </BookmarksProvider>
   );
 }
