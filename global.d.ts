@@ -1,6 +1,6 @@
 declare module '*.svg' {
-  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>
-  export default content
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
 }
 
 declare module 'xmldom' {
@@ -57,7 +57,7 @@ declare module '@fpc/stream' {
     [Symbol.iterator](): Iterator<T>
   }
 
-  export default Stream
+  export default Stream;
 
   namespace Stream {
     function fromArrayLike<T>(obj: ArrayLike<T>): Stream<T>

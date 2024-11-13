@@ -10,8 +10,9 @@ import facebookReactNativePlugin from '@react-native/eslint-plugin';
 import jestPlugin from 'eslint-plugin-jest';
 import ftFlowPlugin from 'eslint-plugin-ft-flow';
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
+import stylisticPlugin from '@stylistic/eslint-plugin';
 import prettierConfig from 'eslint-config-prettier';
-
+import hermesParser from 'hermes-eslint';
 import babelParser from '@babel/eslint-parser';
 import typescriptParser from '@typescript-eslint/parser';
 
@@ -20,6 +21,8 @@ const { parserOptions, plugins, settings, overrides, globals, rules } =
 
 function findParser(name) {
   switch (name) {
+    case 'hermes-eslint':
+      return hermesParser;
     case '@babel/eslint-parser':
       return babelParser;
     case '@typescript-eslint/parser':
@@ -59,6 +62,23 @@ function fixupPlugins(array) {
   );
 }
 
+function fixupRules(oldRules) {
+  const newRules = {};
+
+  for (const name in oldRules) {
+    // ref: https://typescript-eslint.io/blog/deprecating-formatting-rules
+    if (name === '@typescript-eslint/func-call-spacing') {
+      newRules['@stylistic/func-call-spacing'] = oldRules[name];
+    } else if (name === 'react/react-in-jsx-scope') {
+      continue;
+    } else {
+      newRules[name] = oldRules[name];
+    }
+  }
+
+  return newRules;
+}
+
 function fixupConfig(config) {
   const { parser, ...base } = config;
   const override = {};
@@ -69,6 +89,10 @@ function fixupConfig(config) {
 
   if (config.plugins != null) {
     override.plugins = fixupPlugins(config.plugins);
+  }
+
+  if (config.rules != null) {
+    override.rules = fixupRules(config.rules);
   }
 
   return { ...base, ...override };
@@ -86,13 +110,17 @@ export default [
     },
     plugins: fixupPlugins(plugins),
     settings,
-    rules,
+    rules: fixupRules(rules),
   },
   {
     rules: {
       'object-curly-spacing': ['warn', 'always'],
       'array-bracket-spacing': ['warn', 'never'],
       'computed-property-spacing': ['warn', 'never'],
+    },
+    plugins: {
+      '@stylistic': stylisticPlugin,
+      '@typescript-eslint': typescriptPlugin,
     },
   },
   ...overrides.map(fixupConfig),

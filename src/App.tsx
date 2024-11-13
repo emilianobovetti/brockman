@@ -1,58 +1,58 @@
-import type { ComponentProps } from 'react'
-import { StatusBar, StyleSheet } from 'react-native'
-import { NewsFeedList } from '@/components/NewsFeedList'
-import { BookmarkList } from '@/components/BookmarkList'
-import { NavigationContainer } from '@react-navigation/native'
-import type { RouteProp, ParamListBase } from '@react-navigation/core'
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { BookmarksProvider } from '@/bookmarks'
-import feedList from '@/feeds.json'
-import ListIcon from '@/assets/list-24px.svg'
-import BookmarksIcon from '@/assets/bookmarks-24px.svg'
+import type { ComponentProps } from 'react';
+import { StatusBar, StyleSheet } from 'react-native';
+import { NewsFeedList } from '@/components/NewsFeedList';
+import { BookmarkList } from '@/components/BookmarkList';
+import { NavigationContainer } from '@react-navigation/native';
+import type { RouteProp, ParamListBase } from '@react-navigation/core';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BookmarksProvider } from '@/bookmarks';
+import feedList from '@/feeds.json';
+import ListIcon from '@/assets/list-24px.svg';
+import BookmarksIcon from '@/assets/bookmarks-24px.svg';
 
 // TODO: this method is android-only
-StatusBar.setBackgroundColor('#6d0705')
+StatusBar.setBackgroundColor('#6d0705');
 
 function Feeds() {
-  return <NewsFeedList style={styles.newsFeedListContainer} feeds={feedList} />
+  return <NewsFeedList style={styles.newsFeedListContainer} feeds={feedList} />;
 }
 
 function Bookmarks() {
-  return <BookmarkList style={styles.newsFeedListContainer} />
+  return <BookmarkList style={styles.newsFeedListContainer} />;
 }
-const Tab = createBottomTabNavigator()
+const Tab = createBottomTabNavigator();
 
 interface RouteOpts {
-  route: RouteProp<ParamListBase>
-  navigation: BottomTabNavigationProp<ParamListBase>
-  theme: ReactNavigation.Theme
+  route: RouteProp<ParamListBase>;
+  navigation: BottomTabNavigationProp<ParamListBase>;
+  theme: ReactNavigation.Theme;
 }
 
 interface IconOpts {
-  focused: boolean
-  color: string
-  size: number
+  focused: boolean;
+  color: string;
+  size: number;
 }
 
 const navigationIcon = ({ route }: RouteOpts, icon: IconOpts) => {
-  const { focused, color, size } = icon
+  const { focused, color, size } = icon;
 
   switch (route.name) {
     case 'Feeds':
-      return <ListIcon fill={color} height={size} width={size} />
+      return <ListIcon fill={color} height={size} width={size} />;
     case 'Bookmarks':
-      return <BookmarksIcon fill={color} height={size} width={size} />
+      return <BookmarksIcon fill={color} height={size} width={size} />;
   }
-}
+};
 
-type ScreenOptions = ComponentProps<typeof Tab.Navigator>['screenOptions']
+type ScreenOptions = ComponentProps<typeof Tab.Navigator>['screenOptions'];
 
-const navigatorOptions: ScreenOptions = routeOpts => {
+const navigatorOptions: ScreenOptions = (routeOpts) => {
   return {
-    tabBarIcon: iconOpts => navigationIcon(routeOpts, iconOpts),
-  }
-}
+    tabBarIcon: (iconOpts) => navigationIcon(routeOpts, iconOpts),
+  };
+};
 
 export default function App() {
   return (
@@ -64,11 +64,11 @@ export default function App() {
         </Tab.Navigator>
       </NavigationContainer>
     </BookmarksProvider>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   newsFeedListContainer: {
     marginHorizontal: 25,
   },
-})
+});
