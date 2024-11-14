@@ -1,12 +1,13 @@
-import type { ComponentProps } from 'react';
+import { useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import { PaperProvider, MD3LightTheme } from 'react-native-paper';
-import { NewsFeedList } from '@/components/GroupedFeed';
+import {
+  PaperProvider,
+  MD3LightTheme,
+  BottomNavigation,
+} from 'react-native-paper';
+import { NewsFeedList } from '@/components/FlatFeed';
 import { BookmarkList } from '@/components/BookmarkList';
 import { NavigationContainer } from '@react-navigation/native';
-import type { RouteProp, ParamListBase } from '@react-navigation/core';
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BookmarksProvider } from '@/bookmarks';
 import feedList from '@/feeds.json';
 import ListIcon from '@/assets/list-24px.svg';
@@ -22,48 +23,47 @@ function Feeds() {
 function Bookmarks() {
   return <BookmarkList style={styles.newsFeedListContainer} />;
 }
-const Tab = createBottomTabNavigator();
 
-interface RouteOpts {
-  route: RouteProp<ParamListBase>;
-  navigation: BottomTabNavigationProp<ParamListBase>;
-  theme: ReactNavigation.Theme;
+interface IconProps {
+  color?: string;
+  size?: number;
+  direction?: 'rtl' | 'ltr' | null;
 }
 
-interface IconOpts {
-  focused: boolean;
-  color: string;
-  size: number;
-}
-
-function navigationIcon({ route }: RouteOpts, icon: IconOpts) {
-  const { color, size } = icon;
-
-  switch (route.name) {
-    case 'Feeds':
-      return <ListIcon fill={color} height={size} width={size} />;
-    case 'Bookmarks':
-      return <BookmarksIcon fill={color} height={size} width={size} />;
-  }
-}
-
-type ScreenOptions = ComponentProps<typeof Tab.Navigator>['screenOptions'];
-
-const navigatorOptions: ScreenOptions = (routeOpts) => {
-  return {
-    tabBarIcon: (iconOpts) => navigationIcon(routeOpts, iconOpts),
-  };
-};
+const routes = [
+  {
+    key: 'feeds',
+    title: 'Feeds',
+    focusedIcon: ({ color, size }: IconProps) => (
+      <ListIcon fill={color} height={size} width={size} />
+    ),
+  },
+  {
+    key: 'bookmarks',
+    title: 'Bookmarks',
+    focusedIcon: ({ color, size }: IconProps) => (
+      <BookmarksIcon fill={color} height={size} width={size} />
+    ),
+  },
+];
 
 export default function App() {
+  const [index, setIndex] = useState(0);
+
+  const renderScene = BottomNavigation.SceneMap({
+    feeds: Feeds,
+    bookmarks: Bookmarks,
+  });
+
   return (
     <BookmarksProvider>
       <PaperProvider theme={MD3LightTheme}>
         <NavigationContainer>
-          <Tab.Navigator screenOptions={navigatorOptions}>
-            <Tab.Screen name="Feeds" component={Feeds} />
-            <Tab.Screen name="Bookmarks" component={Bookmarks} />
-          </Tab.Navigator>
+          <BottomNavigation
+            navigationState={{ index, routes }}
+            onIndexChange={setIndex}
+            renderScene={renderScene}
+          />
         </NavigationContainer>
       </PaperProvider>
     </BookmarksProvider>
