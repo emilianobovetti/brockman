@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "android": "react-native run-android",
-    "android-release": "yarn android --variant=release",
+    "android-release": "react-native build-android --mode=release",
     "android-avd": "sh android-avd",
     "ios": "react-native run-ios",
     "start": "react-native start",

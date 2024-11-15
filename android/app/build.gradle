@@ -94,6 +94,14 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('BROCKMAN_UPLOAD_STORE_FILE')) {
+                storeFile file(BROCKMAN_UPLOAD_STORE_FILE)
+                storePassword BROCKMAN_UPLOAD_STORE_PASSWORD
+                keyAlias BROCKMAN_UPLOAD_KEY_ALIAS
+                keyPassword BROCKMAN_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
@@ -105,6 +113,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 }
