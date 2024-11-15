@@ -31,7 +31,14 @@ interface NewsFeedListProps {
 }
 
 function getElements(feed: ParsedFeed): RSSItem[] | AtomEntry[] {
-  return [];
+  switch (feed.type) {
+    case 'rss':
+      return feed.items;
+    case 'atom':
+      return feed.entries;
+    default:
+      return [];
+  }
 }
 
 function getDate(elem: RSSItem | AtomEntry): Date | null {
