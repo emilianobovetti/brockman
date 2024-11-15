@@ -1,13 +1,14 @@
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import {
   PaperProvider,
   MD3LightTheme,
   BottomNavigation,
+  TouchableRipple,
 } from 'react-native-paper';
 import { NewsFeedList } from '@/components/FlatFeed';
 import { BookmarkList } from '@/components/BookmarkList';
-import { NavigationContainer } from '@react-navigation/native';
 import { BookmarksProvider } from '@/bookmarks';
 import feedList from '@/feeds.json';
 import ListIcon from '@/assets/list-24px.svg';
@@ -47,6 +48,8 @@ const routes = [
   },
 ];
 
+type TouchableProps = ComponentProps<typeof TouchableRipple> & { key: string };
+
 export default function App() {
   const [index, setIndex] = useState(0);
 
@@ -58,13 +61,16 @@ export default function App() {
   return (
     <BookmarksProvider>
       <PaperProvider theme={MD3LightTheme}>
-        <NavigationContainer>
-          <BottomNavigation
-            navigationState={{ index, routes }}
-            onIndexChange={setIndex}
-            renderScene={renderScene}
-          />
-        </NavigationContainer>
+        <BottomNavigation
+          navigationState={{ index, routes }}
+          onIndexChange={setIndex}
+          renderTouchable={({ key, children, ...props }: TouchableProps) => (
+            <TouchableRipple {...props} key={key}>
+              {children}
+            </TouchableRipple>
+          )}
+          renderScene={renderScene}
+        />
       </PaperProvider>
     </BookmarksProvider>
   );
