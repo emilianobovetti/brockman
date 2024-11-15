@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
-import type { AtomEntry, RSSItem } from '@/utils/feed/parsers';
+import type { AtomEntry, RSSItem } from '@/feed/parser';
 import { useBookmarks } from '@/bookmarks';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';

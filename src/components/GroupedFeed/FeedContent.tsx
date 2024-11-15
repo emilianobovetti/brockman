@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ListRenderItemInfo } from 'react-native';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import type { AtomEntry, ParsedFeed, RSSItem } from '@/utils/feed/parsers';
+import type { AtomEntry, ParsedFeed, RSSItem } from '@/feed/parser';
 import { FeedEntry } from '@/components/GroupedFeed';
 import styles from '@/components/sharedStyles';
 

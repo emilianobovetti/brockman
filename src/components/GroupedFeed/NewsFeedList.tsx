@@ -2,8 +2,8 @@ import { useReducer, useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { FlatList, RefreshControl } from 'react-native';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
-import type { FeedResult } from '@/utils/feed/parsers';
-import { fetchNewsFeed, networkFetchNewsFeed } from '@/utils/feed';
+import type { FeedResult } from '@/feed/parser';
+import { fetchNewsFeed, networkFetchNewsFeed } from '@/feed';
 import { NewsFeed } from '@/components/GroupedFeed';
 
 interface FeedInfo {

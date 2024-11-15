@@ -1,5 +1,5 @@
 import { Ok } from '@fpc/result';
-import type { FeedResult, ParsedFeed } from './parsers';
+import type { FeedResult, ParsedFeed } from './parser';
 import { networkFetchNewsFeed } from './networkFetchNewsFeed';
 import { cacheGet, CACHE_MISS } from './cache';
 

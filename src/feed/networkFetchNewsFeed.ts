@@ -1,5 +1,5 @@
-import type { FeedResult } from './parsers';
-import { parseNewsFeed } from './parsers';
+import type { FeedResult } from './parser';
+import { parseNewsFeed } from './parser';
 import { cacheSet } from './cache';
 
 export async function networkFetchNewsFeed(url: string): Promise<FeedResult> {

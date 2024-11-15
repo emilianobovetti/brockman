@@ -11,14 +11,9 @@ import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
 import LinearGradient from 'react-native-linear-gradient';
-import { fetchNewsFeed, networkFetchNewsFeed } from '@/utils/feed';
+import { fetchNewsFeed, networkFetchNewsFeed } from '@/feed';
 import { useBookmarks } from '@/bookmarks';
-import type {
-  AtomEntry,
-  FeedResult,
-  ParsedFeed,
-  RSSItem,
-} from '@/utils/feed/parsers';
+import type { AtomEntry, FeedResult, ParsedFeed, RSSItem } from '@/feed/parser';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';
 

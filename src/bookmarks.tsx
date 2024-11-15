@@ -1,7 +1,7 @@
 import type { Dispatch, ReactNode } from 'react';
 import { createContext, useReducer, useEffect, useContext } from 'react';
-import type { AtomEntry, RSSItem } from '@/utils/feed/parsers';
-import Storage from '@/utils/storage';
+import type { AtomEntry, RSSItem } from '@/feed/parser';
+import Storage from '@/storage';
 
 export type Bookmark = RSSItem | AtomEntry;
 

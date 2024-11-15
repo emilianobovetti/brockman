@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { FeedContent } from './FeedContent';
-import type { FeedResult } from '@/utils/feed/parsers';
+import type { FeedResult } from '@/feed/parser';
 import styles from '@/components/sharedStyles';
 
 interface NewsFeedProps {
