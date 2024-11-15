@@ -5,10 +5,11 @@ import type { Bookmark } from '@/bookmarks';
 import { useBookmarks } from '@/bookmarks';
 import { FeedEntry } from '@/components/GroupedFeed';
 
-const getLink = (entry: Bookmark) => entry.link;
-const feedEntryRenderer = ({ item }: ListRenderItemInfo<Bookmark>) => (
-  <FeedEntry item={item} />
-);
+const getKey = ({ key }: Bookmark) => key;
+
+function feedEntryRenderer({ item }: ListRenderItemInfo<Bookmark>) {
+  return <FeedEntry item={item} />;
+}
 
 interface BookmarkListProps {
   style: StyleProp<ViewStyle>;
@@ -21,7 +22,7 @@ export function BookmarkList({ style }: BookmarkListProps) {
     <FlatList
       data={bookmarks}
       numColumns={1}
-      keyExtractor={getLink}
+      keyExtractor={getKey}
       renderItem={feedEntryRenderer}
       contentContainerStyle={style}
     />

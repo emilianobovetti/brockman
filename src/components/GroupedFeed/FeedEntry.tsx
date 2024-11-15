@@ -1,17 +1,12 @@
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
-import type { RSSFlatData } from '@/utils/feed/parsers';
+import type { AtomEntry, RSSItem } from '@/utils/feed/parsers';
 import { useBookmarks } from '@/bookmarks';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';
 import styles from '@/components/sharedStyles';
 
-export interface FeedEntry extends RSSFlatData {
-  title: string;
-  link: string;
-}
-
 interface FeedEntryProps {
-  item: FeedEntry;
+  item: RSSItem | AtomEntry;
 }
 
 export function FeedEntry({ item }: FeedEntryProps) {
@@ -23,7 +18,7 @@ export function FeedEntry({ item }: FeedEntryProps) {
       <View style={styles.feedButtonContainer}>
         <TouchableOpacity
           style={styles.feedButton}
-          onPress={() => Linking.openURL(link)}
+          onPress={() => link != null && Linking.openURL(link)}
           onLongPress={() =>
             isBookmarked(item) ? removeBookmark(item) : addBookmark(item)
           }>

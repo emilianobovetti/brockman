@@ -1,41 +1,36 @@
 import { useState } from 'react';
 import type { ListRenderItemInfo } from 'react-native';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import type { ParsedFeed } from '@/utils/feed/parseNewsFeed';
-import type { RSSFlatData } from '@/utils/feed/parsers';
+import type { AtomEntry, ParsedFeed, RSSItem } from '@/utils/feed/parsers';
 import { FeedEntry } from '@/components/GroupedFeed';
 import styles from '@/components/sharedStyles';
 
-const getLink = ({ link }: FeedEntry) => link ?? 'fallback-key';
-const feedEntryRenderer = ({ item }: ListRenderItemInfo<FeedEntry>) => (
-  <FeedEntry item={item} />
-);
+const getLink = ({ link }: RSSItem | AtomEntry) => link ?? 'fallback-key';
+
+function feedEntryRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
+  return <FeedEntry item={item} />;
+}
 
 interface FeedContentProps {
   name: string;
   feed: ParsedFeed;
 }
 
-function filterFeedEntries(items: RSSFlatData[]): FeedEntry[] {
-  return items.filter<FeedEntry>(
-    (item): item is FeedEntry =>
-      typeof item.title === 'string' && typeof item.link === 'string',
-  );
-}
-
-function getEntries(feed: ParsedFeed): FeedEntry[] {
+function getEntries(feed: ParsedFeed): RSSItem[] | AtomEntry[] {
   switch (feed.type) {
     case 'rss':
-      return filterFeedEntries(feed.items);
+      return feed.items;
     case 'atom':
-      return filterFeedEntries(feed.entries);
+      return feed.entries;
     default:
       return [];
   }
 }
 
 export function FeedContent({ name, feed }: FeedContentProps) {
-  const [shownEntries, setShownEntries] = useState<FeedEntry[]>([]);
+  const [shownEntries, setShownEntries] = useState<Array<RSSItem | AtomEntry>>(
+    [],
+  );
 
   const allEntries = getEntries(feed);
   const allEntriesNum = allEntries.length;

@@ -11,8 +11,14 @@ import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
 import LinearGradient from 'react-native-linear-gradient';
-import type { ParserResult, ParsedFeed } from '@/utils/feed/parseNewsFeed';
 import { fetchNewsFeed, networkFetchNewsFeed } from '@/utils/feed';
+import { useBookmarks } from '@/bookmarks';
+import type {
+  AtomEntry,
+  FeedResult,
+  ParsedFeed,
+  RSSItem,
+} from '@/utils/feed/parsers';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';
 
@@ -21,84 +27,27 @@ interface FeedInfo {
   url: string;
 }
 
-export type RSSItem = {
-  type: 'rss';
-  id: string;
-  title: string | null;
-  link: string | null;
-  pubDate: Date | null;
-  description: string | null;
-};
-
-export type AtomEntry = {
-  type: 'atom';
-  id: string;
-  title: string | null;
-  link: string | null;
-  updated: Date | null;
-  content: string | null;
-};
-
-type NewsFeedFetcher = (url: string) => Promise<ParserResult>;
-type UrlToFetched = { [url: string]: ParserResult };
+type NewsFeedFetcher = (url: string) => Promise<FeedResult>;
+type UrlToFetched = { [url: string]: FeedResult };
 
 interface NewsFeedListProps {
   feeds: FeedInfo[];
   style: StyleProp<ViewStyle>;
 }
 
-function randomChunk() {
-  return String((Math.random() * 2147483647) | 0).padStart(10, '0');
-}
-
-function randomId() {
-  return Array(4).fill(null).map(randomChunk).join('');
-}
-
-function parsedFeedElements(feed: ParsedFeed): Array<RSSItem | AtomEntry> {
-  if (feed.type === 'rss') {
-    return feed.items.map((item) => {
-      const pubDate = item.pubDate == null ? null : new Date(item.pubDate);
-
-      return {
-        type: 'rss',
-        id: randomId(),
-        title: item.title,
-        link: item.link,
-        pubDate,
-        description: item.description,
-      };
-    });
-  }
-
-  if (feed.type === 'atom') {
-    return feed.entries.map((entry) => {
-      const updated = entry.updated == null ? null : new Date(entry.updated);
-      return {
-        type: 'atom',
-        id: randomId(),
-        title: entry.title,
-        link: entry.link,
-        updated,
-        content: entry.content,
-      };
-    });
-  }
-
-  // @ts-ignore: Property 'msg' does not exist on type 'never'
-  throw new Error(`Unknown feed type: ${feed.type}`);
+function getElements(feed: ParsedFeed): RSSItem[] | AtomEntry[] {
+  return [];
 }
 
 function getDate(elem: RSSItem | AtomEntry): Date | null {
-  if (elem.type === 'rss') {
-    return elem.pubDate;
+  switch (elem.type) {
+    case 'rss':
+      return elem.pubDate;
+    case 'atom':
+      return elem.updated;
+    default:
+      return null;
   }
-
-  if (elem.type === 'atom') {
-    return elem.updated;
-  }
-
-  return null;
 }
 
 function compareFeedElements(
@@ -108,8 +57,8 @@ function compareFeedElements(
   return (getDate(snd) ?? 0).valueOf() - (getDate(fst) ?? 0).valueOf();
 }
 
-function getId({ id }: RSSItem | AtomEntry) {
-  return id;
+function getKey({ key }: RSSItem | AtomEntry) {
+  return key;
 }
 
 function getHost(url: string) {
@@ -119,27 +68,33 @@ function getHost(url: string) {
 }
 
 function getHTML(elem: RSSItem | AtomEntry) {
-  if (elem.type === 'rss') {
-    return elem.description;
+  switch (elem.type) {
+    case 'rss':
+      return elem.description;
+    case 'atom':
+      return elem.content;
+    default:
+      return null;
   }
-
-  if (elem.type === 'atom') {
-    return elem.content;
-  }
-
-  return null;
 }
 
 interface RSSElementProps {
-  title: string;
-  host: string;
-  html: string;
-  date: string | null;
-  link: string | null;
+  element: RSSItem | AtomEntry;
 }
 
-function RSSElement({ title, host, date, html, link }: RSSElementProps) {
+function RSSElement({ element }: RSSElementProps) {
   const { colors } = useTheme();
+  const { addBookmark, removeBookmark, isBookmarked } = useBookmarks();
+
+  const title = element.title ?? 'Unknown article title';
+  const { link } = element;
+  const host = link == null ? 'Unknown site host' : getHost(link);
+  const html = getHTML(element) ?? 'Empty article content';
+  const date = getDate(element)?.toLocaleDateString('it-IT', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <Card style={{ marginBottom: 10 }}>
@@ -186,7 +141,11 @@ function RSSElement({ title, host, date, html, link }: RSSElementProps) {
           </Button>
         )}
         <Button mode="text">
-          <BookmarkBorderIcon fill="#000" />
+          {isBookmarked(element) ? (
+            <BookmarkIcon fill="#000" />
+          ) : (
+            <BookmarkBorderIcon fill="#000" />
+          )}
         </Button>
       </Card.Actions>
     </Card>
@@ -194,21 +153,7 @@ function RSSElement({ title, host, date, html, link }: RSSElementProps) {
 }
 
 function elementRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
-  const date = getDate(item)?.toLocaleDateString('it-IT', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  return (
-    <RSSElement
-      title={item.title ?? 'Unknown article title'}
-      host={item.link == null ? 'Unknown site host' : getHost(item.link)}
-      date={date ?? null}
-      html={getHTML(item) ?? 'Empty article content'}
-      link={item.link}
-    />
-  );
+  return <RSSElement element={item} />;
 }
 
 export function NewsFeedList({ feeds = [], style }: NewsFeedListProps) {
@@ -218,7 +163,7 @@ export function NewsFeedList({ feeds = [], style }: NewsFeedListProps) {
   const fetchAll = useCallback(
     (fetcher: NewsFeedFetcher) => {
       const fetches = feeds.map(({ url }) => {
-        function onSuccess(result: ParserResult) {
+        function onSuccess(result: FeedResult) {
           setUrlToFeed((curr) => ({ ...curr, [url]: result }));
         }
 
@@ -244,7 +189,7 @@ export function NewsFeedList({ feeds = [], style }: NewsFeedListProps) {
       const result = urlToFeed[url];
 
       if (result.isOk) {
-        array = array.concat(parsedFeedElements(result.get()));
+        array = array.concat(getElements(result.get()));
       }
     }
 
@@ -259,7 +204,7 @@ export function NewsFeedList({ feeds = [], style }: NewsFeedListProps) {
       }
       data={feedArray}
       numColumns={1}
-      keyExtractor={getId}
+      keyExtractor={getKey}
       renderItem={elementRenderer}
       contentContainerStyle={style}
     />

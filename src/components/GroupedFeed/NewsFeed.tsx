@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native';
 import { FeedContent } from './FeedContent';
-import type { ParserResult } from '@/utils/feed/parseNewsFeed';
+import type { FeedResult } from '@/utils/feed/parsers';
 import styles from '@/components/sharedStyles';
 
 interface NewsFeedProps {
   name: string;
   url: string;
-  fetchResult?: ParserResult;
+  fetchResult?: FeedResult;
 }
 
 export function NewsFeed(props: NewsFeedProps) {

@@ -2,14 +2,14 @@ import { useReducer, useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { FlatList, RefreshControl } from 'react-native';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
-import type { ParserResult } from '@/utils/feed/parseNewsFeed';
+import type { FeedResult } from '@/utils/feed/parsers';
 import { fetchNewsFeed, networkFetchNewsFeed } from '@/utils/feed';
 import { NewsFeed } from '@/components/GroupedFeed';
 
 interface FeedInfo {
   name: string;
   url: string;
-  fetchResult?: ParserResult;
+  fetchResult?: FeedResult;
 }
 
 type UrlToIndex = { [url: string]: number };
@@ -17,7 +17,7 @@ type UrlToIndex = { [url: string]: number };
 type State = {
   totalItems: number;
   fetchCount: number;
-  feedFetcher(url: string): Promise<ParserResult>;
+  feedFetcher(url: string): Promise<FeedResult>;
   refreshing: boolean;
   urlToIndex: UrlToIndex;
   feedArray: FeedInfo[];
@@ -92,7 +92,7 @@ function handleResponse(state: State, { url, result }: ResponseAction) {
 
 type SetFeedsAction = { msg: 'setFeeds'; feeds: FeedInfo[] };
 type RefreshAction = { msg: 'refresh' };
-type ResponseAction = { msg: 'response'; url: string; result: ParserResult };
+type ResponseAction = { msg: 'response'; url: string; result: FeedResult };
 type Action = SetFeedsAction | RefreshAction | ResponseAction;
 
 function reducer(state: State, action: Action) {
