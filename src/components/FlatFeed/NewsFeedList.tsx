@@ -1,9 +1,16 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { FlatList, RefreshControl, Linking } from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  Linking,
+  View,
+  StyleSheet,
+} from 'react-native';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
-import { Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
+import LinearGradient from 'react-native-linear-gradient';
 import type { ParserResult, ParsedFeed } from '@/utils/feed/parseNewsFeed';
 import { fetchNewsFeed, networkFetchNewsFeed } from '@/utils/feed';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
@@ -67,7 +74,6 @@ function parsedFeedElements(feed: ParsedFeed): Array<RSSItem | AtomEntry> {
   if (feed.type === 'atom') {
     return feed.entries.map((entry) => {
       const updated = entry.updated == null ? null : new Date(entry.updated);
-
       return {
         type: 'atom',
         id: randomId(),
@@ -124,34 +130,54 @@ function getHTML(elem: RSSItem | AtomEntry) {
   return null;
 }
 
-function elementRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
-  const { title, link } = item;
+interface RSSElementProps {
+  title: string;
+  host: string;
+  html: string;
+  date: string | null;
+  link: string | null;
+}
 
-  const host = link == null ? 'Unknown site host' : getHost(link);
-  const html = getHTML(item) ?? 'Empty article content';
-  const date = getDate(item)?.toLocaleDateString('it-IT', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function RSSElement({ title, host, date, html, link }: RSSElementProps) {
+  const { colors } = useTheme();
 
   return (
     <Card style={{ marginBottom: 10 }}>
       <Card.Title
-        title={title ?? 'Unknown article title'}
+        title={title}
         subtitle={host}
-        right={(props) => (
-          <Text {...props} style={{ marginRight: 10 }}>
-            {date ?? ''}
-          </Text>
-        )}
+        right={(props) =>
+          date == null ? null : (
+            <Text {...props} style={{ marginRight: 10 }}>
+              {date}
+            </Text>
+          )
+        }
       />
       <Card.Content>
-        <WebView
-          originWhitelist={['*']}
-          source={{ html }}
-          style={{ backgroundColor: 'transparent', height: 200, width: '100%' }}
-        />
+        <View style={styles.container}>
+          <WebView
+            originWhitelist={['*']}
+            source={{ html }}
+            onShouldStartLoadWithRequest={(event) => {
+              if (event.navigationType === 'click') {
+                Linking.openURL(event.url);
+              }
+
+              return false;
+            }}
+            scrollEnabled={false}
+            nestedScrollEnabled={false}
+            javaScriptEnabled={false}
+            style={styles.webview}
+          />
+          <LinearGradient
+            colors={['#FFFFFF00', colors.elevation.level1]}
+            locations={[0.8, 1]}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+        </View>
       </Card.Content>
       <Card.Actions>
         {link == null ? null : (
@@ -164,6 +190,24 @@ function elementRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
         </Button>
       </Card.Actions>
     </Card>
+  );
+}
+
+function elementRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
+  const date = getDate(item)?.toLocaleDateString('it-IT', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return (
+    <RSSElement
+      title={item.title ?? 'Unknown article title'}
+      host={item.link == null ? 'Unknown site host' : getHost(item.link)}
+      date={date ?? null}
+      html={getHTML(item) ?? 'Empty article content'}
+      link={item.link}
+    />
   );
 }
 
@@ -221,3 +265,16 @@ export function NewsFeedList({ feeds = [], style }: NewsFeedListProps) {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
+  webview: {
+    backgroundColor: 'transparent',
+    height: 200,
+    width: '100%',
+    overflow: 'hidden',
+  },
+});
