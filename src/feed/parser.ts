@@ -231,9 +231,11 @@ export type FeedResult = Result<XMLParseErrors | RSSParseError, ParsedFeed>;
 
 export function parseNewsFeed(text: string): FeedResult {
   return parseXML(text).map((document: Document) => {
-    const [root] = childrenStream(document).filter((node: ChildNode) =>
-      ['rss', 'atom'].includes((node as Element).tagName),
-    );
+    const [root] = childrenStream(document).filter((node: ChildNode) => {
+      const { tagName } = node as Element;
+
+      return tagName === 'rss' || tagName === 'feed';
+    });
 
     if (root == null) {
       return Err({
@@ -248,7 +250,7 @@ export function parseNewsFeed(text: string): FeedResult {
     switch (tagName) {
       case 'rss':
         return parseRSS(root);
-      case 'atom':
+      case 'feed':
         return parseAtom(root);
       default:
         throw new Error(`Unknown tagName: '${tagName}'`);
