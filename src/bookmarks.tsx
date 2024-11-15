@@ -1,6 +1,7 @@
 import type { Dispatch, ReactNode } from 'react';
 import { createContext, useReducer, useEffect, useContext } from 'react';
 import type { AtomEntry, RSSItem } from '@/feed/parser';
+import { reHydrateElement } from '@/feed/parser';
 import Storage from '@/storage';
 
 export type Bookmark = RSSItem | AtomEntry;
@@ -28,7 +29,11 @@ const Ctx = createContext<HookContext>([emptyState, crash]);
 async function getStoredBookmarks(): Promise<Bookmark[]> {
   const bookmarks = await Storage.getItem<Bookmark[]>('bookmarks');
 
-  return bookmarks ?? [];
+  if (bookmarks == null) {
+    return [];
+  }
+
+  return bookmarks.map(reHydrateElement);
 }
 
 function storeBookmarks(bookmarks: Bookmark[]) {

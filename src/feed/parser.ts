@@ -265,3 +265,41 @@ function randomChunk() {
 function randomKey() {
   return Array(4).fill(null).map(randomChunk).join('');
 }
+
+function restoreDates(feed: ParsedFeed): ParsedFeed {
+  switch (feed.type) {
+    case 'rss':
+      feed.items = feed.items.map(reHydrateRSSItem);
+      break;
+    case 'atom':
+      feed.entries = feed.entries.map(reHydrateAtomEntry);
+      break;
+  }
+
+  return feed;
+}
+
+export function reHydrateFeed(feed: ParsedFeed): ParsedFeed {
+  return restoreDates(feed);
+}
+
+export function reHydrateElement(elem: RSSItem | AtomEntry) {
+  switch (elem.type) {
+    case 'rss':
+      return reHydrateRSSItem(elem);
+    case 'atom':
+      return reHydrateAtomEntry(elem);
+  }
+}
+
+export function reHydrateRSSItem(item: RSSItem): RSSItem {
+  item.pubDate = item.pubDate == null ? null : new Date(item.pubDate);
+
+  return item;
+}
+
+export function reHydrateAtomEntry(entry: AtomEntry): AtomEntry {
+  entry.updated = entry.updated == null ? null : new Date(entry.updated);
+
+  return entry;
+}

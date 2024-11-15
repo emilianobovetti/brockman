@@ -7,7 +7,7 @@ import {
   BottomNavigation,
   TouchableRipple,
 } from 'react-native-paper';
-import { NewsFeedList } from '@/components/FlatFeed';
+import { FlatFeedList } from '@/components/FlatFeedList';
 import { BookmarkList } from '@/components/BookmarkList';
 import { BookmarksProvider } from '@/bookmarks';
 import feedList from '@/feeds.json';
@@ -18,7 +18,7 @@ import BookmarksIcon from '@/assets/bookmarks-24px.svg';
 StatusBar.setBackgroundColor('#6d0705');
 
 function Feeds() {
-  return <NewsFeedList style={styles.newsFeedListContainer} feeds={feedList} />;
+  return <FlatFeedList style={styles.newsFeedListContainer} feeds={feedList} />;
 }
 
 function Bookmarks() {
