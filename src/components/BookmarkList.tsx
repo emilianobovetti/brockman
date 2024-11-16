@@ -1,6 +1,6 @@
 import type { StyleProp, ViewStyle } from 'react-native';
 import { FlatList, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
 import { useBookmarks } from '@/bookmarks';
 import { AtomEntry, RSSItem } from '@/feed/parser';
@@ -12,6 +12,7 @@ interface BookmarkListProps {
 }
 
 export function BookmarkList({ style }: BookmarkListProps) {
+  const { colors } = useTheme();
   const { bookmarks } = useBookmarks();
 
   if (bookmarks.length === 0) {
@@ -21,12 +22,25 @@ export function BookmarkList({ style }: BookmarkListProps) {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#f0f0f0',
+          backgroundColor: colors.background,
         }}>
-        <Text variant="headlineLarge">
-          Nessun segnalibro salvato{' '}
-          <BookmarkBorderIcon fill="#000" height={20} width={20} />
-        </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Text
+            variant="headlineMedium"
+            style={{ position: 'relative', right: 2 }}>
+            Nessun segnalibro salvato
+          </Text>
+          <BookmarkBorderIcon
+            fill="#000"
+            style={{ position: 'relative', top: 2, left: 2 }}
+            height={22}
+            width={22}
+          />
+        </View>
       </View>
     );
   }

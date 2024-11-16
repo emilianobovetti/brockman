@@ -14,8 +14,7 @@ import feedList from '@/feeds.json';
 import ListIcon from '@/assets/list-24px.svg';
 import BookmarksIcon from '@/assets/bookmarks-24px.svg';
 
-// TODO: this method is android-only
-StatusBar.setBackgroundColor('#6d0705');
+StatusBar.setBackgroundColor(MD3LightTheme.colors.onSecondaryContainer);
 
 function Feeds() {
   return <FlatFeedList style={styles.newsFeedListContainer} feeds={feedList} />;

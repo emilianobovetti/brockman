@@ -30,6 +30,10 @@ export function RSSElement({ elem }: RSSElementProps) {
       <Card.Title
         title={title}
         subtitle={host}
+        titleVariant="headlineSmall"
+        titleStyle={{ color: colors.secondary }}
+        subtitleVariant="titleSmall"
+        subtitleStyle={{ color: colors.tertiary }}
         right={(props) =>
           date == null ? null : (
             <Text {...props} style={{ marginRight: 10 }}>
@@ -50,6 +54,7 @@ export function RSSElement({ elem }: RSSElementProps) {
 
               return false;
             }}
+            minimumFontSize={18}
             scrollEnabled={false}
             nestedScrollEnabled={false}
             javaScriptEnabled={false}
@@ -75,9 +80,9 @@ export function RSSElement({ elem }: RSSElementProps) {
             isBookmarked(elem) ? removeBookmark(elem) : addBookmark(elem)
           }>
           {isBookmarked(elem) ? (
-            <BookmarkIcon fill="#000" />
+            <BookmarkIcon fill={colors.onSurface} />
           ) : (
-            <BookmarkBorderIcon fill="#000" />
+            <BookmarkBorderIcon fill={colors.onSurface} />
           )}
         </Button>
       </Card.Actions>
