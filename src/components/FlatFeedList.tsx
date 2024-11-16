@@ -3,6 +3,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { FlatList, RefreshControl, StyleSheet } from 'react-native';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
 import { fetchNewsFeed, networkFetchNewsFeed } from '@/feed';
+import { cacheClear } from '@/feed/cache';
 import type { AtomEntry, FeedResult, ParsedFeed, RSSItem } from '@/feed/parser';
 import { RSSElement, getDate } from '@/components/RSSElement';
 
@@ -39,6 +40,8 @@ export function FlatFeedList({ feeds = [], style }: FlatFeedListProps) {
   );
 
   const refresh = useCallback(() => {
+    setUrlToFeed({});
+    cacheClear();
     setLoading(true);
     fetchAll(networkFetchNewsFeed);
   }, [fetchAll]);
