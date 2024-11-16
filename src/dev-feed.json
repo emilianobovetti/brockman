@@ -54,5 +54,9 @@
   {
     "name": "Troy Hunt",
     "url": "https://www.troyhunt.com/rss"
+  },
+  {
+    "name": "adafruit blog",
+    "url": "https://blog.adafruit.com/feed"
   }
 ]

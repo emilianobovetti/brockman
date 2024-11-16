@@ -10,7 +10,7 @@ import {
 import { FlatFeedList } from '@/components/FlatFeedList';
 import { BookmarkList } from '@/components/BookmarkList';
 import { BookmarksProvider } from '@/bookmarks';
-import feedList from '@/feeds.json';
+import feedList from '@/3d-print-feed.json';
 import ListIcon from '@/assets/list-24px.svg';
 import BookmarksIcon from '@/assets/bookmarks-24px.svg';
 

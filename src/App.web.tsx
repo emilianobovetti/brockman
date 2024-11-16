@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import { NewsFeedList } from '@/components/GroupedFeed';
 import { BookmarkList } from '@/components/BookmarkList';
 import { BookmarksProvider } from '@/bookmarks';
-import feedList from '@/feeds.json';
+import feedList from '@/3d-print-feed.json';
 
 export default function App() {
   return (
