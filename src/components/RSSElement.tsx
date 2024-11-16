@@ -18,7 +18,6 @@ export function RSSElement({ elem }: RSSElementProps) {
   const title = elem.title ?? 'Unknown article title';
   const { link } = elem;
   const host = link == null ? 'Unknown site host' : getHost(link);
-  const html = getHTML(elem) ?? 'Empty article content';
   const date = getDate(elem)?.toLocaleDateString('it-IT', {
     year: 'numeric',
     month: 'long',
@@ -29,6 +28,7 @@ export function RSSElement({ elem }: RSSElementProps) {
     <Card style={{ marginBottom: 10 }}>
       <Card.Title
         title={title}
+        titleNumberOfLines={2}
         subtitle={host}
         titleVariant="headlineSmall"
         titleStyle={{ color: colors.secondary }}
@@ -44,22 +44,7 @@ export function RSSElement({ elem }: RSSElementProps) {
       />
       <Card.Content>
         <View style={styles.container}>
-          <WebView
-            originWhitelist={['*']}
-            source={{ html }}
-            onShouldStartLoadWithRequest={(event) => {
-              if (event.navigationType === 'click') {
-                Linking.openURL(event.url);
-              }
-
-              return false;
-            }}
-            minimumFontSize={18}
-            scrollEnabled={false}
-            nestedScrollEnabled={false}
-            javaScriptEnabled={false}
-            style={styles.webview}
-          />
+          {getContent(elem)}
           <LinearGradient
             colors={['#FFFFFF00', colors.elevation.level1]}
             locations={[0.8, 1]}
@@ -96,15 +81,82 @@ export function getHost(url: string) {
   return host;
 }
 
-export function getHTML(elem: RSSItem | AtomEntry) {
+export function getContent(elem: RSSItem | AtomEntry) {
   switch (elem.type) {
     case 'rss':
-      return elem.description;
+      return webViewFromRawHTML(elem.description);
     case 'atom':
-      return elem.content;
+      return webViewFromRawHTML(elem.content);
     default:
       return null;
   }
+}
+
+function webViewFromRawHTML(input: string | null) {
+  if (input == null) {
+    return null;
+  }
+
+  // ref: https://www.joshwcomeau.com/css/custom-css-reset
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.4;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+  </style>
+</head>
+
+<body>
+${input}
+</body>
+</html>
+`;
+
+  return (
+    <WebView
+      originWhitelist={['*']}
+      source={{ html }}
+      onShouldStartLoadWithRequest={(event) => {
+        if (event.navigationType === 'click') {
+          Linking.openURL(event.url);
+        }
+
+        return false;
+      }}
+      minimumFontSize={18}
+      scrollEnabled={false}
+      nestedScrollEnabled={false}
+      javaScriptEnabled={false}
+      style={styles.webview}
+    />
+  );
 }
 
 export function getDate(elem: RSSItem | AtomEntry): Date | null {
@@ -126,7 +178,7 @@ const styles = StyleSheet.create({
   webview: {
     backgroundColor: 'transparent',
     height: 200,
-    width: '100%',
     overflow: 'hidden',
+    marginTop: 5,
   },
 });
