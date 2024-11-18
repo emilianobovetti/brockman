@@ -4,19 +4,23 @@ import { FlatList, RefreshControl, StyleSheet } from 'react-native';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
 import { fetchNewsFeed, networkFetchNewsFeed } from '@/feed';
 import { cacheClear } from '@/feed/cache';
-import type { AtomEntry, FeedResult, ParsedFeed, RSSItem } from '@/feed/parser';
-import { RSSElement, getDate } from '@/components/RSSElement';
-
-interface FeedInfo {
-  name: string;
-  url: string;
-}
+import type { Post, FeedResult, FeedMetadata } from '@/feed/parser';
+import { getFeedPosts, getPostDate } from '@/feed/parser';
+import { RSSPost } from '@/components/RSSPost';
 
 type NewsFeedFetcher = (url: string) => Promise<FeedResult>;
-type UrlToFetched = { [url: string]: FeedResult };
+
+type UrlToFetched = {
+  [url: string]: { meta: FeedMetadata; result: FeedResult };
+};
+
+interface FeedPost {
+  meta: FeedMetadata;
+  post: Post;
+}
 
 interface FlatFeedListProps {
-  feeds: FeedInfo[];
+  feeds: FeedMetadata[];
   style: StyleProp<ViewStyle>;
 }
 
@@ -26,12 +30,21 @@ export function FlatFeedList({ feeds = [], style }: FlatFeedListProps) {
 
   const fetchAll = useCallback(
     (fetcher: NewsFeedFetcher) => {
-      const fetches = feeds.map(({ url }) => {
+      const fetches = feeds.map((meta) => {
+        const { url } = meta;
+
         function onSuccess(result: FeedResult) {
-          setUrlToFeed((curr) => ({ ...curr, [url]: result }));
+          const fetched = { meta, result };
+          setUrlToFeed((curr) => ({ ...curr, [url]: fetched }));
         }
 
-        return fetcher(url).then(onSuccess, console.error);
+        function onError(error: Error) {
+          console.error(
+            `Error while fetching ${url}\n${error?.message}\n${error.stack}`,
+          );
+        }
+
+        return fetcher(url).then(onSuccess, onError);
       });
 
       Promise.all(fetches).then(() => setLoading(false));
@@ -49,17 +62,21 @@ export function FlatFeedList({ feeds = [], style }: FlatFeedListProps) {
   useEffect(() => fetchAll(fetchNewsFeed), [fetchAll]);
 
   const feedArray = useMemo(() => {
-    let array: Array<RSSItem | AtomEntry> = [];
+    let array: Array<FeedPost> = [];
 
     for (const url in urlToFeed) {
-      const result = urlToFeed[url];
+      const { meta, result } = urlToFeed[url];
 
       if (result.isOk) {
-        array = array.concat(getElements(result.get()));
+        const parsedFeed = result.get();
+        const posts = getFeedPosts(parsedFeed);
+        array = array.concat(posts.map((post) => ({ meta, post })));
+      } else {
+        console.error(`Error while parsing ${url}`, result.getErr());
       }
     }
 
-    return array.sort(compareFeedElements).slice(0, 50);
+    return array.sort(compareFeedElements).slice(0, 100);
   }, [urlToFeed]);
 
   return (
@@ -77,28 +94,20 @@ export function FlatFeedList({ feeds = [], style }: FlatFeedListProps) {
   );
 }
 
-function getElements(feed: ParsedFeed): RSSItem[] | AtomEntry[] {
-  switch (feed.type) {
-    case 'rss':
-      return feed.items;
-    case 'atom':
-      return feed.entries;
-    default:
-      return [];
-  }
+function getKey({ post }: FeedPost) {
+  return `feed-item-${post.key}`;
 }
 
-function getKey({ key }: RSSItem | AtomEntry) {
-  return `feed-item-${key}`;
+function elementRenderer({ item }: ListRenderItemInfo<FeedPost>) {
+  const { meta, post } = item;
+
+  return <RSSPost meta={meta} post={post} />;
 }
 
-function elementRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
-  return <RSSElement elem={item} />;
-}
-
-function compareFeedElements(
-  fst: RSSItem | AtomEntry,
-  snd: RSSItem | AtomEntry,
-) {
+function compareFeedElements(fst: FeedPost, snd: FeedPost) {
   return (getDate(snd) ?? 0).valueOf() - (getDate(fst) ?? 0).valueOf();
+}
+
+function getDate({ post }: FeedPost) {
+  return getPostDate(post);
 }

@@ -1,38 +1,28 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ListRenderItemInfo } from 'react-native';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import type { AtomEntry, ParsedFeed, RSSItem } from '@/feed/parser';
+import type { FeedMetadata, ParsedFeed, Post } from '@/feed/parser';
+import { getFeedPosts } from '@/feed/parser';
 import { FeedEntry } from '@/components/GroupedFeed';
 import styles from '@/components/sharedStyles';
 
-const getLink = ({ link }: RSSItem | AtomEntry) => link ?? 'fallback-key';
-
-function feedEntryRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
-  return <FeedEntry item={item} />;
-}
-
 interface FeedContentProps {
-  name: string;
+  meta: FeedMetadata;
   feed: ParsedFeed;
 }
 
-function getEntries(feed: ParsedFeed): RSSItem[] | AtomEntry[] {
-  switch (feed.type) {
-    case 'rss':
-      return feed.items;
-    case 'atom':
-      return feed.entries;
-    default:
-      return [];
-  }
+interface FeedPost {
+  meta: FeedMetadata;
+  post: Post;
 }
 
-export function FeedContent({ name, feed }: FeedContentProps) {
-  const [shownEntries, setShownEntries] = useState<Array<RSSItem | AtomEntry>>(
-    [],
-  );
+export function FeedContent({ meta, feed }: FeedContentProps) {
+  const [shownEntries, setShownEntries] = useState<Array<FeedPost>>([]);
 
-  const allEntries = getEntries(feed);
+  const allEntries: FeedPost[] = useMemo(() => {
+    return getFeedPosts(feed).map((post) => ({ meta, post }));
+  }, [feed]);
+
   const allEntriesNum = allEntries.length;
   const shownEntriesNum = shownEntries.length;
   const isExpanded = allEntriesNum > 0 && shownEntriesNum > 0;
@@ -47,13 +37,13 @@ export function FeedContent({ name, feed }: FeedContentProps) {
       <TouchableOpacity
         style={[styles.feedHead, isExpanded && styles.activeFeedHead]}
         onPress={() => (isExpanded ? hideEntries() : showMoreEntries())}>
-        <Text style={styles.feedTitle}>{name}</Text>
+        <Text style={styles.feedTitle}>{meta.name}</Text>
       </TouchableOpacity>
 
       <FlatList
         numColumns={1}
         data={shownEntries}
-        keyExtractor={getLink}
+        keyExtractor={getKey}
         renderItem={feedEntryRenderer}
       />
 
@@ -74,4 +64,12 @@ export function FeedContent({ name, feed }: FeedContentProps) {
       )}
     </>
   );
+}
+
+function getKey({ post }: FeedPost) {
+  return post.key;
+}
+
+function feedEntryRenderer({ item }: ListRenderItemInfo<FeedPost>) {
+  return <FeedEntry meta={item.meta} post={item.post} />;
 }

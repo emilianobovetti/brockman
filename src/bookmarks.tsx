@@ -1,10 +1,13 @@
 import type { Dispatch, ReactNode } from 'react';
 import { createContext, useReducer, useEffect, useContext } from 'react';
-import type { AtomEntry, RSSItem } from '@/feed/parser';
-import { reHydrateElement } from '@/feed/parser';
+import type { FeedMetadata, Post } from '@/feed/parser';
+import { reHydratePost } from '@/feed/parser';
 import Storage from '@/storage';
 
-export type Bookmark = RSSItem | AtomEntry;
+export interface Bookmark {
+  meta: FeedMetadata;
+  post: Post;
+}
 
 interface State {
   urlToIndex: { [url: string]: number };
@@ -33,7 +36,10 @@ async function getStoredBookmarks(): Promise<Bookmark[]> {
     return [];
   }
 
-  return bookmarks.map(reHydrateElement);
+  return bookmarks.map(({ meta, post }) => ({
+    meta,
+    post: reHydratePost(post),
+  }));
 }
 
 function storeBookmarks(bookmarks: Bookmark[]) {
@@ -44,9 +50,9 @@ function handleAddStoredItems({ bookmarks }: State, items: Bookmark[]) {
   const newItems = bookmarks.concat(items);
   const urlToIndex: State['urlToIndex'] = {};
 
-  newItems.forEach(({ link }, index) => {
-    if (link != null) {
-      urlToIndex[link] = index;
+  newItems.forEach(({ post }, index) => {
+    if (post.link != null) {
+      urlToIndex[post.link] = index;
     }
   });
 
@@ -58,14 +64,16 @@ function handleAddStoredItems({ bookmarks }: State, items: Bookmark[]) {
 }
 
 function handleAddItem(state: State, newItem: Bookmark) {
-  if (newItem.link == null) {
+  const { post } = newItem;
+
+  if (post.link == null) {
     return state;
   }
 
   const { urlToIndex, bookmarks } = state;
   const newItems = bookmarks.slice();
   const newMap = { ...urlToIndex };
-  newMap[newItem.link] = newItems.push(newItem) - 1;
+  newMap[post.link] = newItems.push(newItem) - 1;
 
   if (state.isStorageLoaded) {
     storeBookmarks(newItems);
@@ -74,15 +82,15 @@ function handleAddItem(state: State, newItem: Bookmark) {
   return { ...state, bookmarks: newItems, urlToIndex: newMap };
 }
 
-function handleRemoveItem(state: State, item: Bookmark) {
-  if (item.link == null) {
+function handleRemoveItem(state: State, link: string | null) {
+  if (link == null) {
     return state;
   }
 
   const { urlToIndex, bookmarks } = state;
-  const newItems = bookmarks.filter((bm) => bm.link !== item.link);
+  const newItems = bookmarks.filter((bm) => bm.post.link !== link);
   const newMap = { ...urlToIndex };
-  delete newMap[item.link];
+  delete newMap[link];
 
   if (state.isStorageLoaded) {
     storeBookmarks(newItems);
@@ -93,7 +101,7 @@ function handleRemoveItem(state: State, item: Bookmark) {
 
 type AddStoredItemsAction = { msg: 'addStoredItems'; items: Bookmark[] };
 type AddItemAction = { msg: 'addItem'; item: Bookmark };
-type RemoveItemAction = { msg: 'removeItem'; item: Bookmark };
+type RemoveItemAction = { msg: 'removeItem'; link: string | null };
 type Action = AddStoredItemsAction | AddItemAction | RemoveItemAction;
 
 function reducer(state: State, action: Action) {
@@ -103,7 +111,7 @@ function reducer(state: State, action: Action) {
     case 'addItem':
       return handleAddItem(state, action.item);
     case 'removeItem':
-      return handleRemoveItem(state, action.item);
+      return handleRemoveItem(state, action.link);
     default:
       // @ts-ignore: Property 'msg' does not exist on type 'never'
       throw new Error(`Unknown action message: '${action?.msg}'`);
@@ -135,8 +143,9 @@ export const useBookmarks = () => {
   return {
     bookmarks,
     addBookmark: (item: Bookmark) => dispatch({ msg: 'addItem', item }),
-    removeBookmark: (item: Bookmark) => dispatch({ msg: 'removeItem', item }),
-    isBookmarked: ({ link }: Bookmark) =>
+    removeBookmark: (link: string | null) =>
+      dispatch({ msg: 'removeItem', link }),
+    isBookmarked: (link: string | null) =>
       link != null && urlToIndex[link] != null,
   };
 };

@@ -2,9 +2,9 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { FlatList, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
+import type { Bookmark } from '@/bookmarks';
 import { useBookmarks } from '@/bookmarks';
-import { AtomEntry, RSSItem } from '@/feed/parser';
-import { RSSElement } from '@/components/RSSElement';
+import { RSSPost } from '@/components/RSSPost';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
 
 interface BookmarkListProps {
@@ -57,10 +57,10 @@ export function BookmarkList({ style }: BookmarkListProps) {
   );
 }
 
-function getKey({ link }: RSSItem | AtomEntry) {
-  return `bookmark-item-${link}`;
+function getKey({ post }: Bookmark) {
+  return `bookmark-item-${post.key}`;
 }
 
-function elementRenderer({ item }: ListRenderItemInfo<RSSItem | AtomEntry>) {
-  return <RSSElement elem={item} />;
+function elementRenderer({ item }: ListRenderItemInfo<Bookmark>) {
+  return <RSSPost meta={item.meta} post={item.post} />;
 }

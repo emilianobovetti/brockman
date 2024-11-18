@@ -283,15 +283,6 @@ export function reHydrateFeed(feed: ParsedFeed): ParsedFeed {
   return restoreDates(feed);
 }
 
-export function reHydrateElement(elem: RSSItem | AtomEntry) {
-  switch (elem.type) {
-    case 'rss':
-      return reHydrateRSSItem(elem);
-    case 'atom':
-      return reHydrateAtomEntry(elem);
-  }
-}
-
 export function reHydrateRSSItem(item: RSSItem): RSSItem {
   item.pubDate = item.pubDate == null ? null : new Date(item.pubDate);
 
@@ -302,4 +293,42 @@ export function reHydrateAtomEntry(entry: AtomEntry): AtomEntry {
   entry.updated = entry.updated == null ? null : new Date(entry.updated);
 
   return entry;
+}
+
+export type Post = RSSItem | AtomEntry;
+
+export interface FeedMetadata {
+  name: string;
+  url: string;
+}
+
+export function reHydratePost(post: Post): Post {
+  switch (post.type) {
+    case 'rss':
+      return reHydrateRSSItem(post);
+    case 'atom':
+      return reHydrateAtomEntry(post);
+  }
+}
+
+export function getFeedPosts(feed: ParsedFeed): Post[] {
+  switch (feed.type) {
+    case 'rss':
+      return feed.items;
+    case 'atom':
+      return feed.entries;
+    default:
+      return [];
+  }
+}
+
+export function getPostDate(elem: Post): Date | null {
+  switch (elem.type) {
+    case 'rss':
+      return elem.pubDate;
+    case 'atom':
+      return elem.updated;
+    default:
+      return null;
+  }
 }

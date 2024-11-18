@@ -2,23 +2,28 @@ import { Linking, View, StyleSheet } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
 import LinearGradient from 'react-native-linear-gradient';
-import type { RSSItem, AtomEntry } from '@/feed/parser';
+import type { FeedMetadata, Post } from '@/feed/parser';
+import { getPostDate } from '@/feed/parser';
 import { useBookmarks } from '@/bookmarks';
 import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';
 
-interface RSSElementProps {
-  elem: RSSItem | AtomEntry;
+interface RSSPostProps {
+  meta: FeedMetadata;
+  post: Post;
 }
 
-export function RSSElement({ elem }: RSSElementProps) {
+export function RSSPost({ meta, post }: RSSPostProps) {
   const { colors } = useTheme();
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarks();
 
-  const title = elem.title ?? 'Unknown article title';
-  const { link } = elem;
+  const title = post.title ?? 'Unknown article title';
+
+  const { link } = post;
   const host = link == null ? 'Unknown site host' : getHost(link);
-  const date = getDate(elem)?.toLocaleDateString('it-IT', {
+  const subtitle = meta.name == null ? host : `${meta.name} - ${host}`;
+
+  const date = getPostDate(post)?.toLocaleDateString('it-IT', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -29,7 +34,7 @@ export function RSSElement({ elem }: RSSElementProps) {
       <Card.Title
         title={title}
         titleNumberOfLines={2}
-        subtitle={host}
+        subtitle={subtitle}
         titleVariant="headlineSmall"
         titleStyle={{ color: colors.secondary }}
         subtitleVariant="titleSmall"
@@ -44,7 +49,7 @@ export function RSSElement({ elem }: RSSElementProps) {
       />
       <Card.Content>
         <View style={styles.container}>
-          {getContent(elem)}
+          {getContent(post)}
           <LinearGradient
             colors={['#FFFFFF00', colors.elevation.level1]}
             locations={[0.8, 1]}
@@ -56,15 +61,17 @@ export function RSSElement({ elem }: RSSElementProps) {
       <Card.Actions>
         {link == null ? null : (
           <Button mode="text" onPress={() => Linking.openURL(link)}>
-            Continua a leggere
+            Apri
           </Button>
         )}
         <Button
           mode="text"
           onPress={() =>
-            isBookmarked(elem) ? removeBookmark(elem) : addBookmark(elem)
+            isBookmarked(link)
+              ? removeBookmark(link)
+              : addBookmark({ meta, post })
           }>
-          {isBookmarked(elem) ? (
+          {isBookmarked(link) ? (
             <BookmarkIcon fill={colors.onSurface} />
           ) : (
             <BookmarkBorderIcon fill={colors.onSurface} />
@@ -81,7 +88,7 @@ export function getHost(url: string) {
   return host;
 }
 
-export function getContent(elem: RSSItem | AtomEntry) {
+export function getContent(elem: Post) {
   switch (elem.type) {
     case 'rss':
       return webViewFromRawHTML(elem.description);
@@ -158,17 +165,6 @@ ${input}
       style={styles.webview}
     />
   );
-}
-
-export function getDate(elem: RSSItem | AtomEntry): Date | null {
-  switch (elem.type) {
-    case 'rss':
-      return elem.pubDate;
-    case 'atom':
-      return elem.updated;
-    default:
-      return null;
-  }
 }
 
 const styles = StyleSheet.create({

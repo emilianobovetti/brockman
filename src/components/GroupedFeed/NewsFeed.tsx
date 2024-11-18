@@ -2,6 +2,7 @@ import { View, Text } from 'react-native';
 import { FeedContent } from './FeedContent';
 import type { FeedResult } from '@/feed/parser';
 import styles from '@/components/sharedStyles';
+import { useMemo } from 'react';
 
 interface NewsFeedProps {
   name: string;
@@ -10,7 +11,8 @@ interface NewsFeedProps {
 }
 
 export function NewsFeed(props: NewsFeedProps) {
-  const { name, fetchResult = null } = props;
+  const { name, url, fetchResult = null } = props;
+  const meta = useMemo(() => ({ name, url }), [name, url]);
 
   if (fetchResult == null) {
     return (
@@ -32,5 +34,5 @@ export function NewsFeed(props: NewsFeedProps) {
     );
   }
 
-  return <FeedContent name={name} feed={fetchResult.get()} />;
+  return <FeedContent meta={meta} feed={fetchResult.get()} />;
 }
