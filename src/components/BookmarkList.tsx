@@ -5,7 +5,7 @@ import type { ListRenderItemInfo } from '@react-native/virtualized-lists';
 import type { Bookmark } from '@/bookmarks';
 import { useBookmarks } from '@/bookmarks';
 import { RSSPost } from '@/components/RSSPost';
-import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
+import BookmarkBorderIcon from '@/assets/bookmark-border-24px.svg';
 
 interface BookmarkListProps {
   style: StyleProp<ViewStyle>;

@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import type { FeedMetadata, Post } from '@/feed/parser';
 import { useBookmarks } from '@/bookmarks';
-import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
+import BookmarkBorderIcon from '@/assets/bookmark-border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';
 import styles from '@/components/sharedStyles';
 

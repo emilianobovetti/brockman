@@ -2,6 +2,8 @@ Brockman is a RSS/Atom news aggregator built with react native
 
 ![photo_2020-07-24_11-23-10](https://user-images.githubusercontent.com/3957026/88380299-9b2d7680-cda4-11ea-8dd1-273ff55afd04.jpg)
 
+Icons are stolen from [polymerelements/iron-icons](https://github.com/polymerelements/iron-icons)
+
 ## Local setup on Arch Linux
 
 ```

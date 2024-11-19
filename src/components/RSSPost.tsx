@@ -5,8 +5,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import type { FeedMetadata, Post } from '@/feed/parser';
 import { getPostDate } from '@/feed/parser';
 import { useBookmarks } from '@/bookmarks';
-import BookmarkBorderIcon from '@/assets/bookmark_border-24px.svg';
+import BookmarkBorderIcon from '@/assets/bookmark-border-24px.svg';
 import BookmarkIcon from '@/assets/bookmark-24px.svg';
+import LaunchIcon from '@/assets/launch-24px.svg';
 
 interface RSSPostProps {
   meta: FeedMetadata;
@@ -62,6 +63,12 @@ export function RSSPost({ meta, post }: RSSPostProps) {
         {link == null ? null : (
           <Button mode="text" onPress={() => Linking.openURL(link)}>
             Apri
+            <View>
+              <LaunchIcon
+                style={{ marginTop: 3, marginLeft: 7 }}
+                fill={colors.primary}
+              />
+            </View>
           </Button>
         )}
         <Button
