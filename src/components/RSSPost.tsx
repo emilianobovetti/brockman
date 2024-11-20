@@ -33,11 +33,16 @@ export function RSSPost({ meta, post }: RSSPostProps) {
   return (
     <Card style={{ marginBottom: 10 }}>
       <Card.Title
-        title={title}
+        title={
+          <Text
+            variant="headlineSmall"
+            style={{ color: colors.secondary }}
+            onPress={() => link != null && Linking.openURL(link)}>
+            {title}
+          </Text>
+        }
         titleNumberOfLines={2}
         subtitle={subtitle}
-        titleVariant="headlineSmall"
-        titleStyle={{ color: colors.secondary }}
         subtitleVariant="titleSmall"
         subtitleStyle={{ color: colors.tertiary }}
         right={(props) =>
@@ -65,8 +70,10 @@ export function RSSPost({ meta, post }: RSSPostProps) {
             Apri
             <View>
               <LaunchIcon
-                style={{ marginTop: 3, marginLeft: 7 }}
                 fill={colors.primary}
+                height={18}
+                width={18}
+                style={{ marginTop: 7, marginLeft: 7 }}
               />
             </View>
           </Button>
@@ -90,7 +97,7 @@ export function RSSPost({ meta, post }: RSSPostProps) {
 }
 
 export function getHost(url: string) {
-  const [, , host] = url.match(/^([^/]*\/\/)?([^/]*)\//) ?? [];
+  const [, , , host] = url.match(/^([^/]*\/\/)?(www\.)?([^/]*)\//) ?? [];
 
   return host;
 }

@@ -1,7 +1,7 @@
 [
   {
-    "name": "3D Printing Industry",
-    "url": "https://3dprintingindustry.com/feed/"
+    "name": "3D Scanners Archives",
+    "url": "https://3dprintingindustry.com/3d-scanner/feed"
   },
   {
     "name": "Prusa Research",
@@ -40,15 +40,31 @@
     "url": "https://www.3dwasp.com/en/feed/"
   },
   {
+    "name": "Featured on Thingiverse",
+    "url": "https://www.thingiverse.com/rss/featured"
+  },
+  {
     "name": "Manufat Blog",
     "url": "https://www.manufat.com/blog/notizie-stampa-3d-1/feed"
+  },
+  {
+    "name": "Thangs3D on Medium",
+    "url": "https://blog.thangs.com/feed"
+  },
+  {
+    "name": "MIT 3D printing News",
+    "url": "https://news.mit.edu/topic/mit3-d-printing-rss.xml"
   },
   {
     "name": "UltiMaker on youtube",
     "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCGEx6-kWhUwmwJOih_R2wUQ"
   },
   {
-    "name": "Slant 3D on youtube",
-    "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6QNjBn6KMq5-pe3OE11zZg"
+    "name": "Polymaker on youtube",
+    "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCO-Tq4vEhfNAKRi0cvLwxng"
+  },
+  {
+    "name": "Bambu Lab on youtube",
+    "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCDF3Sd2LNAsa-nKD17Jq3mw"
   }
 ]
