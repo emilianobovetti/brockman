@@ -2,6 +2,7 @@ import { Linking, View, StyleSheet } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
 import LinearGradient from 'react-native-linear-gradient';
+import { openBrowser } from '@swan-io/react-native-browser';
 import type { FeedMetadata, Post } from '@/feed/parser';
 import { getPostDate } from '@/feed/parser';
 import { useBookmarks } from '@/bookmarks';
@@ -37,7 +38,7 @@ export function RSSPost({ meta, post }: RSSPostProps) {
           <Text
             variant="headlineSmall"
             style={{ color: colors.secondary }}
-            onPress={() => link != null && Linking.openURL(link)}>
+            onPress={() => link != null && openBrowser(link, {})}>
             {title}
           </Text>
         }
@@ -66,7 +67,7 @@ export function RSSPost({ meta, post }: RSSPostProps) {
       </Card.Content>
       <Card.Actions>
         {link == null ? null : (
-          <Button mode="text" onPress={() => Linking.openURL(link)}>
+          <Button mode="text" onPress={() => openBrowser(link, {})}>
             Apri
             <View>
               <LaunchIcon
@@ -167,7 +168,7 @@ ${input}
       source={{ html }}
       onShouldStartLoadWithRequest={(event) => {
         if (event.navigationType === 'click') {
-          Linking.openURL(event.url);
+          openBrowser(event.url, {});
         }
 
         return false;
