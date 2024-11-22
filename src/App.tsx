@@ -130,11 +130,11 @@ export default function App() {
 function toggleLockMode(onToggle: (mode: LockTaskModeState) => void) {
   if (TaskLockerModule.getLockTaskModeState() === 'LOCK_TASK_MODE_NONE') {
     TaskLockerModule.startLockTask();
+    onToggle('LOCK_TASK_MODE_LOCKED');
   } else {
     TaskLockerModule.stopLockTask();
+    onToggle('LOCK_TASK_MODE_NONE');
   }
-
-  setTimeout(() => onToggle(TaskLockerModule.getLockTaskModeState()), 10);
 }
 
 function getLockerRoute(lockMode: LockTaskModeState) {
