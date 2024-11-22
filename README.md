@@ -1,6 +1,6 @@
 Brockman is a RSS/Atom news aggregator built with react native
 
-![photo_2020-07-24_11-23-10](https://user-images.githubusercontent.com/3957026/88380299-9b2d7680-cda4-11ea-8dd1-273ff55afd04.jpg)
+![Screenshot_2024-11-22_23-09-55](https://github.com/user-attachments/assets/4a36da3a-0c0e-467b-b461-d800d21e6ac7)
 
 Icons are stolen from [polymerelements/iron-icons](https://github.com/PolymerElements/iron-icons/blob/d3acebe047c6b5372b5b93703cdfd8f776f3660d/iron-icons.js)
 
@@ -26,6 +26,20 @@ $ yarn start
 ```
 
 ## Install
+
+Generate the keystore first:
+
+```
+$ echo 'BROCKMAN_UPLOAD_STORE_FILE=brockman-release.keystore
+BROCKMAN_UPLOAD_KEY_ALIAS=brockman-release
+BROCKMAN_UPLOAD_STORE_PASSWORD=secret
+BROCKMAN_UPLOAD_KEY_PASSWORD=secret' > "$HOME/.gradle/gradle.properties"
+
+cd android/app
+keytool -genkeypair -v -storetype PKCS12 -keystore brockman-release.keystore -alias brockman-release -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Build and install, optionally use `dpm set-device-owner` to enable task locking:
 
 ```
 $ echo "sdk.dir=$HOME/Android/Sdk" > android/local.properties
