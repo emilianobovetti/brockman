@@ -38,7 +38,7 @@ export function RSSPost({ meta, post }: RSSPostProps) {
           <Text
             variant="headlineSmall"
             style={{ color: colors.secondary }}
-            onPress={() => link != null && openInAppBrowser(link)}>
+            onPress={() => link != null && openUrl(link)}>
             {title}
           </Text>
         }
@@ -67,7 +67,7 @@ export function RSSPost({ meta, post }: RSSPostProps) {
       </Card.Content>
       <Card.Actions>
         {link == null ? null : (
-          <Button mode="text" onPress={() => openInAppBrowser(link)}>
+          <Button mode="text" onPress={() => openUrl(link)}>
             Apri
             <View>
               <LaunchIcon
@@ -168,7 +168,7 @@ ${input}
       source={{ html }}
       onShouldStartLoadWithRequest={(event) => {
         if (event.navigationType === 'click') {
-          openInAppBrowser(event.url);
+          openUrl(event.url);
         }
 
         return false;
@@ -182,12 +182,20 @@ ${input}
   );
 }
 
-function openInAppBrowser(url: string) {
-  return openBrowser(url, {}).catch((error) => {
+async function openUrl(url: string) {
+  const host = getHost(url);
+
+  if (['youtube.com', 'youtu.be', 'm.youtube.com'].includes(host)) {
+    return Linking.openURL(url);
+  }
+
+  try {
+    return await openBrowser(url, {});
+  } catch (error) {
     console.error(`Error while opening ${url}`, error);
 
     Linking.openURL(url);
-  });
+  }
 }
 
 const styles = StyleSheet.create({

@@ -42,7 +42,8 @@ class TaskLockerModule(reactContext: ReactApplicationContext) :
                     "sh.tno.brockman",
                     "com.android.chrome",
                     "org.mozilla.firefox",
-                    "org.mozilla.fennec_fdroid"
+                    "org.mozilla.fennec_fdroid",
+                    "com.google.android.youtube"
             )
     )
 
