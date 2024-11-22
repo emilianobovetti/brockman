@@ -1,6 +1,8 @@
 /node_modules/
 /yarn-error.log
 /android/app/.cxx
+/.vscode/
 .gradle/
+/android/local.properties
 build/
 *.keystore

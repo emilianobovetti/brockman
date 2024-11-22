@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_DEVICE_ADMINS" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
       android:name=".MainApplication"
@@ -9,7 +11,9 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      android:supportsRtl="true">
+      android:supportsRtl="true"
+      android:launchMode="singleTask"
+      android:stateNotNeeded="true">
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -19,8 +23,23 @@
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+
+      <receiver
+        android:name=".AdminReceiver"
+        android:description="@string/app_name"
+        android:permission="android.permission.BIND_DEVICE_ADMIN"
+        android:exported="false">
+          <meta-data
+            android:name="android.app.device_admin"
+            android:resource="@xml/device_owner_receiver" />
+          <intent-filter>
+              <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE"/>
+              <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+          </intent-filter>
+       </receiver>
     </application>
 </manifest>

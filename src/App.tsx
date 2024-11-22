@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
-import { useState } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { NativeModules, StatusBar, StyleSheet } from 'react-native';
 import {
   PaperProvider,
   MD3LightTheme,
@@ -13,6 +13,8 @@ import { BookmarksProvider } from '@/bookmarks';
 import feedList from '@/3d-print-feed.json';
 import ListIcon from '@/assets/list-24px.svg';
 import BookmarksIcon from '@/assets/bookmarks-24px.svg';
+import LockIcon from '@/assets/lock-24px.svg';
+import LockOpenIcon from '@/assets/lock-open-24px.svg';
 
 StatusBar.setBackgroundColor(MD3LightTheme.colors.onSecondaryContainer);
 
@@ -24,13 +26,17 @@ function Bookmarks() {
   return <BookmarkList style={styles.newsFeedListContainer} />;
 }
 
+function Never() {
+  return null;
+}
+
 interface IconProps {
   color?: string;
   size?: number;
   direction?: 'rtl' | 'ltr' | null;
 }
 
-const routes = [
+const staticRoutes = [
   {
     key: 'feeds',
     title: 'Feeds',
@@ -47,14 +53,60 @@ const routes = [
   },
 ];
 
+type LockTaskModeState =
+  | 'LOCK_TASK_MODE_NONE'
+  | 'LOCK_TASK_MODE_LOCKED'
+  | 'LOCK_TASK_MODE_PINNED'
+  | 'LOCK_TASK_MODE_UNKNOWN';
+
+const lockerRoute = {
+  key: 'lock',
+  title: 'Lock',
+};
+
+const lockClosed = ({ color, size }: IconProps) => (
+  <LockIcon fill={color} height={size} width={size} />
+);
+
+const lockOpened = ({ color, size }: IconProps) => (
+  <LockOpenIcon fill={color} height={size} width={size} />
+);
+
 type TouchableProps = ComponentProps<typeof TouchableRipple> & { key: string };
+
+const { TaskLockerModule } = NativeModules;
 
 export default function App() {
   const [index, setIndex] = useState(0);
+  const [lockMode, setLockMode] = useState(
+    TaskLockerModule.getLockTaskModeState,
+  );
+
+  const routes = useMemo(() => {
+    if (TaskLockerModule.isDeviceOwnerApp()) {
+      return [...staticRoutes, getLockerRoute(lockMode)];
+    }
+
+    return staticRoutes;
+  }, [lockMode]);
+
+  const handleIndexChange = useCallback(
+    (index: number) => {
+      const lockIndex = routes.findIndex(({ key }) => key === lockerRoute.key);
+
+      if (index === lockIndex) {
+        return toggleLockMode(setLockMode);
+      }
+
+      return setIndex(index);
+    },
+    [routes],
+  );
 
   const renderScene = BottomNavigation.SceneMap({
     feeds: Feeds,
     bookmarks: Bookmarks,
+    lock: Never,
   });
 
   return (
@@ -62,7 +114,7 @@ export default function App() {
       <PaperProvider theme={MD3LightTheme}>
         <BottomNavigation
           navigationState={{ index, routes }}
-          onIndexChange={setIndex}
+          onIndexChange={handleIndexChange}
           renderTouchable={({ key, children, ...props }: TouchableProps) => (
             <TouchableRipple {...props} key={key}>
               {children}
@@ -73,6 +125,23 @@ export default function App() {
       </PaperProvider>
     </BookmarksProvider>
   );
+}
+
+function toggleLockMode(onToggle: (mode: LockTaskModeState) => void) {
+  if (TaskLockerModule.getLockTaskModeState() === 'LOCK_TASK_MODE_NONE') {
+    TaskLockerModule.startLockTask();
+  } else {
+    TaskLockerModule.stopLockTask();
+  }
+
+  setTimeout(() => onToggle(TaskLockerModule.getLockTaskModeState()), 10);
+}
+
+function getLockerRoute(lockMode: LockTaskModeState) {
+  const focusedIcon =
+    lockMode === 'LOCK_TASK_MODE_NONE' ? lockOpened : lockClosed;
+
+  return { ...lockerRoute, focusedIcon };
 }
 
 const styles = StyleSheet.create({
