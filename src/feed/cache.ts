@@ -33,11 +33,13 @@ export async function cacheGet<T>(url: string): Promise<typeof CACHE_MISS | T> {
 export async function cacheClear(): Promise<void> {
   const keys = await Storage.getAllKeys();
 
-  for (const key of keys) {
-    if (key.startsWith(CACHE_PREFIX)) {
-      Storage.removeItem(key);
-    }
-  }
+  await Promise.all(
+    keys.map((key) => {
+      if (key.startsWith(CACHE_PREFIX)) {
+        Storage.removeItem(key);
+      }
+    }),
+  );
 }
 
 function getKey(url: string) {

@@ -52,10 +52,13 @@ export function FlatFeedList({ feeds = [], style }: FlatFeedListProps) {
     [feeds],
   );
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     setUrlToFeed({});
-    cacheClear();
     setLoading(true);
+    await cacheClear().catch((error) =>
+      console.error('Error while clearing cache', error),
+    );
+
     fetchAll(networkFetchNewsFeed);
   }, [fetchAll]);
 
