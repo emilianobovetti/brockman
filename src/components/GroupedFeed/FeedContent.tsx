@@ -36,7 +36,8 @@ export function FeedContent({ meta, feed }: FeedContentProps) {
     <>
       <TouchableOpacity
         style={[styles.feedHead, isExpanded && styles.activeFeedHead]}
-        onPress={() => (isExpanded ? hideEntries() : showMoreEntries())}>
+        onPress={() => (isExpanded ? hideEntries() : showMoreEntries())}
+      >
         <Text style={styles.feedTitle}>{meta.name}</Text>
       </TouchableOpacity>
 
@@ -55,7 +56,8 @@ export function FeedContent({ meta, feed }: FeedContentProps) {
               shownEntriesNum < allEntriesNum
                 ? showMoreEntries()
                 : hideEntries()
-            }>
+            }
+          >
             <Text style={styles.showMoreText}>
               {shownEntriesNum < allEntriesNum ? 'Show More' : 'Collapse'}
             </Text>

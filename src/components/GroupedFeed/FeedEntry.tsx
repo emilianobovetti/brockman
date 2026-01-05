@@ -24,7 +24,8 @@ export function FeedEntry({ meta, post }: FeedEntryProps) {
             isBookmarked(link)
               ? removeBookmark(link)
               : addBookmark({ meta, post })
-          }>
+          }
+        >
           <Text style={styles.feedButtonText}>{title}</Text>
           {isBookmarked(link) ? (
             <BookmarkIcon fill="#000" />

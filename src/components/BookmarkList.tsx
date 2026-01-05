@@ -23,15 +23,18 @@ export function BookmarkList({ style }: BookmarkListProps) {
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: colors.background,
-        }}>
+        }}
+      >
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-          }}>
+          }}
+        >
           <Text
             variant="headlineMedium"
-            style={{ position: 'relative', right: 2 }}>
+            style={{ position: 'relative', right: 2 }}
+          >
             Nessun segnalibro salvato
           </Text>
           <BookmarkBorderIcon

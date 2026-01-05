@@ -1,18 +1,27 @@
 package sh.tno.brockman
 
-import android.view.View
-import com.facebook.react.ReactPackage
+import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.uimanager.ReactShadowNode
-import com.facebook.react.uimanager.ViewManager
+import com.facebook.react.module.model.ReactModuleInfo
+import com.facebook.react.module.model.ReactModuleInfoProvider
 
-class TaskLockerPackage : ReactPackage {
-        override fun createViewManagers(
-                reactContext: ReactApplicationContext
-        ): MutableList<ViewManager<View, ReactShadowNode<*>>> = mutableListOf()
+class TaskLockerPackage : BaseReactPackage() {
 
-        override fun createNativeModules(
-                reactContext: ReactApplicationContext
-        ): MutableList<NativeModule> = listOf(TaskLockerModule(reactContext)).toMutableList()
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
+          if (name == TaskLockerModule.NAME) TaskLockerModule(reactContext) else null
+
+  override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
+    mapOf(
+            TaskLockerModule.NAME to
+                    ReactModuleInfo(
+                            name = TaskLockerModule.NAME,
+                            className = TaskLockerModule.NAME,
+                            canOverrideExistingModule = false,
+                            needsEagerInit = false,
+                            isCxxModule = false,
+                            isTurboModule = true
+                    )
+    )
+  }
 }

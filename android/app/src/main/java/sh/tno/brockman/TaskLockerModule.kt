@@ -6,15 +6,17 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import sh.tno.brockman.ffi.NativeTaskLockerSpec
 
-class TaskLockerModule(reactContext: ReactApplicationContext) :
-        ReactContextBaseJavaModule(reactContext) {
-  override fun getName() = "TaskLockerModule"
+class TaskLockerModule(reactContext: ReactApplicationContext) : NativeTaskLockerSpec(reactContext) {
 
-  @ReactMethod
-  fun getLockTaskModeState(): String {
+  override fun getName() = NAME
+
+  companion object {
+    const val NAME = "TaskLockerModule"
+  }
+
+  override fun getLockTaskModeState(): String {
     val activity = getActivity()
     val activityManager = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
@@ -26,17 +28,17 @@ class TaskLockerModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun isDeviceOwnerApp(): Boolean {
-    return getDevicePolicyManager(getActivity()).isDeviceOwnerApp("sh.tno.brockman")
+  override fun isDeviceOwnerApp(): Boolean {
+    val policyManager = getDevicePolicyManager(getActivity())
+
+    return policyManager.isDeviceOwnerApp("sh.tno.brockman")
   }
 
-  @ReactMethod
-  fun startLockTask() {
+  override fun startLockTask() {
     val activity = getActivity()
-    val devicePolicyManager = getDevicePolicyManager(activity)
+    val policyManager = getDevicePolicyManager(activity)
     val component = ComponentName(activity, AdminReceiver::class.java)
-    devicePolicyManager.setLockTaskPackages(
+    policyManager.setLockTaskPackages(
             component,
             arrayOf(
                     "sh.tno.brockman",
@@ -50,13 +52,13 @@ class TaskLockerModule(reactContext: ReactApplicationContext) :
     activity.startLockTask()
   }
 
-  @ReactMethod
-  fun stopLockTask() {
+  override fun stopLockTask() {
     getActivity().stopLockTask()
   }
 
   private fun getActivity(): Activity {
-    return currentActivity ?: throw IllegalStateException("Current activity is null")
+    return reactApplicationContext.currentActivity
+            ?: throw IllegalStateException("Current activity is null")
   }
 
   private fun getDevicePolicyManager(activity: Activity): DevicePolicyManager {

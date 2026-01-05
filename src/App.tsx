@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import { useCallback, useMemo, useState } from 'react';
-import { NativeModules, StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import {
   PaperProvider,
   MD3LightTheme,
@@ -15,6 +15,7 @@ import ListIcon from '@/assets/list-24px.svg';
 import BookmarksIcon from '@/assets/bookmarks-24px.svg';
 import LockIcon from '@/assets/lock-24px.svg';
 import LockOpenIcon from '@/assets/lock-open-24px.svg';
+import TaskLocker from '@/NativeTaskLocker';
 
 StatusBar.setBackgroundColor(MD3LightTheme.colors.onSecondaryContainer);
 
@@ -74,16 +75,12 @@ const lockOpened = ({ color, size }: IconProps) => (
 
 type TouchableProps = ComponentProps<typeof TouchableRipple> & { key: string };
 
-const { TaskLockerModule } = NativeModules;
-
 export default function App() {
   const [index, setIndex] = useState(0);
-  const [lockMode, setLockMode] = useState(
-    TaskLockerModule.getLockTaskModeState,
-  );
+  const [lockMode, setLockMode] = useState(TaskLocker.getLockTaskModeState);
 
   const routes = useMemo(() => {
-    if (TaskLockerModule.isDeviceOwnerApp()) {
+    if (TaskLocker.isDeviceOwnerApp()) {
       return [...staticRoutes, getLockerRoute(lockMode)];
     }
 
@@ -103,11 +100,15 @@ export default function App() {
     [routes],
   );
 
-  const renderScene = BottomNavigation.SceneMap({
-    feeds: Feeds,
-    bookmarks: Bookmarks,
-    lock: Never,
-  });
+  const renderScene = useMemo(
+    () =>
+      BottomNavigation.SceneMap({
+        feeds: Feeds,
+        bookmarks: Bookmarks,
+        lock: Never,
+      }),
+    [],
+  );
 
   return (
     <BookmarksProvider>
@@ -128,11 +129,11 @@ export default function App() {
 }
 
 function toggleLockMode(onToggle: (mode: LockTaskModeState) => void) {
-  if (TaskLockerModule.getLockTaskModeState() === 'LOCK_TASK_MODE_NONE') {
-    TaskLockerModule.startLockTask();
+  if (TaskLocker.getLockTaskModeState() === 'LOCK_TASK_MODE_NONE') {
+    TaskLocker.startLockTask();
     onToggle('LOCK_TASK_MODE_LOCKED');
   } else {
-    TaskLockerModule.stopLockTask();
+    TaskLocker.stopLockTask();
     onToggle('LOCK_TASK_MODE_NONE');
   }
 }

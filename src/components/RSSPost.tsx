@@ -1,5 +1,5 @@
 import { Linking, View, StyleSheet } from 'react-native';
-import { Button, Card, Text, useTheme } from 'react-native-paper';
+import { Button, IconButton, Card, Text, useTheme } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
 import LinearGradient from 'react-native-linear-gradient';
 import { openBrowser } from '@swan-io/react-native-browser';
@@ -38,7 +38,8 @@ export function RSSPost({ meta, post }: RSSPostProps) {
           <Text
             variant="headlineSmall"
             style={{ color: colors.secondary }}
-            onPress={() => link != null && openUrl(link)}>
+            onPress={() => link != null && openUrl(link)}
+          >
             {title}
           </Text>
         }
@@ -67,31 +68,41 @@ export function RSSPost({ meta, post }: RSSPostProps) {
       </Card.Content>
       <Card.Actions>
         {link == null ? null : (
-          <Button mode="text" onPress={() => openUrl(link)}>
+          <Button
+            mode="text"
+            onPress={() => openUrl(link)}
+            contentStyle={styles.openBrowserIcon}
+            icon={({ size }) => (
+              <LaunchIcon fill={colors.primary} height={size} width={size} />
+            )}
+          >
             Apri
-            <View>
-              <LaunchIcon
-                fill={colors.primary}
-                height={18}
-                width={18}
-                style={{ marginTop: 7, marginLeft: 7 }}
-              />
-            </View>
           </Button>
         )}
-        <Button
-          mode="text"
+        <IconButton
+          contentStyle={{ margin: 0 }}
+          containerColor={colors.inverseOnSurface}
           onPress={() =>
             isBookmarked(link)
               ? removeBookmark(link)
               : addBookmark({ meta, post })
-          }>
-          {isBookmarked(link) ? (
-            <BookmarkIcon fill={colors.onSurface} />
-          ) : (
-            <BookmarkBorderIcon fill={colors.onSurface} />
-          )}
-        </Button>
+          }
+          icon={({ size }) =>
+            isBookmarked(link) ? (
+              <BookmarkIcon
+                height={size}
+                width={size}
+                fill={colors.onSurface}
+              />
+            ) : (
+              <BookmarkBorderIcon
+                height={size}
+                width={size}
+                fill={colors.onSurface}
+              />
+            )
+          }
+        />
       </Card.Actions>
     </Card>
   );
@@ -208,5 +219,8 @@ const styles = StyleSheet.create({
     height: 200,
     overflow: 'hidden',
     marginTop: 5,
+  },
+  openBrowserIcon: {
+    flexDirection: 'row-reverse',
   },
 });

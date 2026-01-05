@@ -1,5 +1,5 @@
-import type { LogLevel } from 'xmldom';
-import { DOMParser } from 'xmldom';
+import type { Options } from '@xmldom/xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 import type { Result } from '@fpc/result';
 import { Ok, Err } from '@fpc/result';
 import Stream from '@fpc/stream';
@@ -31,12 +31,16 @@ export function parseXML(text: string): Result<XMLParseErrors, Document> {
     fatalError: [],
   };
 
-  const domparserOpts = {
+  const domparserOpts: Options = {
     locator: { lineNumber: 'none', columnNumber: 'none' },
-    errorHandler(level: LogLevel, message: any) {
+    errorHandler(level, message: any) {
       const { lineNumber, columnNumber } = domparserOpts.locator;
 
-      logs[level].push({ message, lineNumber, columnNumber });
+      logs[level as keyof ParseLogs].push({
+        message,
+        lineNumber,
+        columnNumber,
+      });
     },
   };
 

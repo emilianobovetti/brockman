@@ -1,13 +1,13 @@
-// ref: https://github.com/react-native-community/template/blob/ba029fb56e416d1d35ef77caa27f418a14db4717/template/android/build.gradle
+// ref: https://github.com/react-native-community/template/blob/0.83.1/template/android/build.gradle
 
 buildscript {
     ext {
-        buildToolsVersion = "35.0.0"
+        buildToolsVersion = "36.0.0"
         minSdkVersion = 30
-        compileSdkVersion = 34
-        targetSdkVersion = 34
+        compileSdkVersion = 36
+        targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.0.21"
+        kotlinVersion = "2.1.20"
     }
     repositories {
         google()

@@ -1,4 +1,4 @@
-// ref: https://github.com/react-native-community/template/blob/ba029fb56e416d1d35ef77caa27f418a14db4717/template/android/settings.gradle
+// ref: https://github.com/react-native-community/template/blob/0.83.1/template/android/settings.gradle
 
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }

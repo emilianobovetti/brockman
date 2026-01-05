@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-set -e
-
-export ANDROID_HOME="$HOME/Android/Sdk"
-export ANDROID_AVD_HOME="$HOME/.config/.android/avd"
-
-exec emulator @"$(emulator -list-avds | head -n 1)"

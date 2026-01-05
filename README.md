@@ -13,16 +13,12 @@ Icons are stolen from [polymerelements/iron-icons](https://github.com/PolymerEle
 Then install the following packages from AUR:
 
 [android-studio](https://aur.archlinux.org/packages/android-studio)
-[android-sdk-platform-tools](https://aur.archlinux.org/packages/android-sdk-platform-tools)
-[android-sdk-cmdline-tools-latest](https://aur.archlinux.org/packages/android-sdk-cmdline-tools-latest)
-[android-emulator](https://aur.archlinux.org/packages/android-emulator)
 
 ```
-$ sdkmanager --licenses
 $ yarn
-$ yarn android-avd # start the emulator
 $ echo "sdk.dir=$HOME/Android/Sdk" > android/local.properties
 $ yarn start
+$ yarn android
 ```
 
 ## Install
